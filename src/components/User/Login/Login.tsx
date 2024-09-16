@@ -1,10 +1,83 @@
 import { Player } from '@lottiefiles/react-lottie-player';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { toast } from 'react-toastify';
+import axiosUser from '../../../service/axios/axiosUser';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { userLogin } from '../../../service/redux/slices/userAuthSlice';
+import { LoginFormValues, UserData } from '../../../interfaces/interface';
+
+
+
+const validationSchema = Yup.object({
+  email: Yup.string()
+    .email('Invalid email address')
+    .required('Email is required'),
+  password: Yup.string()
+    .min(6, 'Password must be at least 6 characters')
+    .required('Password is required'),
+});
 
 const Login = () => {
+  const [userData, setUserData] = useState<UserData>({
+    user: '',
+    userId: '',
+    image: '',
+    loggedIn: false,
+  });
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const formik = useFormik<LoginFormValues>({
+    initialValues: {
+      email: '',
+      password: '',
+    },
+    validationSchema,
+    onSubmit: async (values) => {
+      try {
+        await formHandleSubmit(values);
+      } catch (err) {
+        console.log(err);
+      }
+      console.log('Login values:', values);
+    },
+  });
+
+  const formHandleSubmit = async (values: LoginFormValues) => {
+    try {
+      const { data } = await axiosUser().post('/loginUser', values);
+      if (data.message === 'Success') {
+        console.log(data, 'logindata');
+        setUserData({
+          user: data.name,
+          userId: data._id,
+          image: data.image,
+          loggedIn: true,
+        });
+        localStorage.setItem('userToken', data.token);
+        localStorage.setItem('refreshToken', data.refreshToken);
+        dispatch(userLogin({user: data.name,userId: data._id,image: data.image,loggedIn:true}));
+        toast.success('User Logged in Successfully');
+        navigate('/');
+      } else if (data.message === 'UserNotFound') {
+        toast.error('User Not Found');
+      } else if (data.message === 'passwordNotMatched') {
+        toast.error('Entered password is wrong');
+      } else if (data.message === 'blocked') {
+        toast.info('Your Account is Blocked');
+      } else {
+        toast.error('User is not Registered, Please Sign Up!');
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error((error as Error).message);
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-between  px-12">
-      {/* Left side - Login Form */}
+    <div className="min-h-screen flex items-center justify-between px-12">
       <div className="w-1/2 space-y-6">
         <h1 className="text-3xl font-garamond">X P E R T A S S I S T</h1>
         <h2 className="text-3xl font-semibold">User Login</h2>
@@ -12,11 +85,15 @@ const Login = () => {
           Please login to continue to your account.
         </p>
 
-        <form className="mt-6">
+        <form onSubmit={formik.handleSubmit} className="mt-6">
           <div className="relative mb-6">
             <input
               type="email"
               id="email"
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              name="email"
               className="peer w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black placeholder-transparent"
               placeholder="Email"
             />
@@ -26,6 +103,9 @@ const Login = () => {
             >
               Email
             </label>
+            {formik.touched.email && formik.errors.email ? (
+              <div className="text-red-500 text-sm">{formik.errors.email}</div>
+            ) : null}
           </div>
           <div className="relative mb-6">
             <input
@@ -33,6 +113,9 @@ const Login = () => {
               id="password"
               className="peer w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black placeholder-transparent"
               placeholder="Password"
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
             />
             <label
               htmlFor="password"
@@ -40,8 +123,16 @@ const Login = () => {
             >
               Password
             </label>
+            {formik.touched.password && formik.errors.password ? (
+              <div className="text-red-500 text-sm">
+                {formik.errors.password}
+              </div>
+            ) : null}
           </div>
-          <button className="w-full bg-black text-white p-2 rounded-lg hover:bg-gray-800">
+          <button
+            type="submit"
+            className="w-full bg-black text-white p-2 rounded-lg hover:bg-gray-800"
+          >
             Sign in
           </button>
         </form>
@@ -67,7 +158,6 @@ const Login = () => {
         </p>
       </div>
 
-      {/* Right side - Animation */}
       <div className="w-1/2 flex justify-center items-center">
         <Player
           autoplay

@@ -111,7 +111,7 @@ const Services = () => {
         {/* Custom Navigation Buttons - Placed Below the Swiper */}
         <div className="flex justify-center mt-6 space-x-4">
           <FontAwesomeIcon icon={faArrowLeft} size='2xl' className='custom-prev-button px-4 py-2 text-cyan-900'/>
-          <FontAwesomeIcon icon={faArrowRight} size='2xl' className='custom-prev-button px-4 py-2 text-cyan-900'/>
+          <FontAwesomeIcon icon={faArrowRight} size='2xl' className='custom-next-button px-4 py-2 text-cyan-900'/>
         </div>
       </div>
     </div>

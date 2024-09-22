@@ -14,7 +14,7 @@ export default {
       },
       textShadow: {
         'glow': '0 0 10px rgba(255, 255, 255, 0.6)',
-      }
+      },
     },
   },
   plugins: [

@@ -3,10 +3,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { toast } from 'react-toastify';
-import axiosUser from '../../../service/axios/axiosUser';
 import { useDispatch } from 'react-redux';
-import { userLogin } from '../../../service/redux/slices/userAuthSlice';
 import { LoginFormValues } from '../../../interfaces/interface';
+import { expertLogin } from '../../../service/redux/slices/expertAuthSlice';
+import axiosExpert from '../../../service/axios/axiosExpert';
 import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
 
@@ -39,21 +39,21 @@ const Login = () => {
 
   const formHandleSubmit = async (values: LoginFormValues) => {
     try {
-      const { data } = await axiosUser().post('/loginUser', values);
+      const { data } = await axiosExpert().post('/loginExpert', values);
       if (data.message === 'Success') {
         console.log(data, 'logindata');
-        localStorage.setItem('userToken', data.token);
-        localStorage.setItem('refreshToken', data.refreshToken);
+        localStorage.setItem('expertToken', data.token);
+        localStorage.setItem('expertRefreshToken', data.refreshToken);
         dispatch(
-          userLogin({
-            user: data.name,
-            userId: data._id,
+          expertLogin({
+            expert: data.name,
+            expertId: data._id,
             image: data.image,
             loggedIn: true,
           })
         );
-        toast.success('User Logged in Successfully');
-        navigate('/');
+        toast.success('Logged in Successfully');
+        navigate('/expert');
       } else if (data.message === 'UserNotFound') {
         toast.error('User Not Found');
       } else if (data.message === 'passwordNotMatched') {
@@ -74,26 +74,28 @@ const Login = () => {
       const token: string | undefined = datas.credential;
       if (token) {
         const decode = jwtDecode(token) as any;
-        const { data } = await axiosUser().post('/googleLoginUser', {
+        const { data } = await axiosExpert().post('/googleLoginExpert', {
           email: decode.email,
         });
         if (data.message === 'Success') {
-          toast.success('Login success!');
-          localStorage.setItem('userToken', data.token);
-          localStorage.setItem('refreshToken', data.refreshToken);
+          localStorage.setItem('expertToken', data.token);
+          localStorage.setItem('expertRefreshToken', data.refreshToken);
           dispatch(
-            userLogin({
-              user: data.name,
-              userId: data._id,
+            expertLogin({
+              expert: data.name,
+              expertId: data._id,
               image: data.image,
               loggedIn: true,
             })
           );
-          navigate('/');
-        } else if (data.message === 'Blocked') {
-          toast.error('Your Blocked By Admin');
+          toast.success('Logged in Successfully');
+          navigate('/expert');
+        } else if (data.message === 'UserNotFound') {
+          toast.error('User Not Found');
+        } else if (data.message === 'blocked') {
+          toast.info('Your Account is Blocked');
         } else {
-          toast.error('Not registered! Please Signup to  continue.');
+          toast.error('User is not Registered, Please Sign Up!');
         }
       }
     } catch (error: any) {
@@ -105,7 +107,7 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-between px-12">
       <div className="w-1/2 space-y-6">
         <h1 className="text-3xl font-garamond">X P E R T A S S I S T</h1>
-        <h2 className="text-3xl font-semibold">User Login</h2>
+        <h2 className="text-3xl font-semibold">Expert Login</h2>
         <p className="text-gray-600">
           Please login to continue to your account.
         </p>
@@ -178,7 +180,7 @@ const Login = () => {
 
         <p className="mt-6 text-center text-gray-600">
           Don't have an account?{' '}
-          <Link to={'/signup'} className="text-blue-600">
+          <Link to={'/expert/signup'} className="text-blue-600">
             Sign Up
           </Link>
         </p>

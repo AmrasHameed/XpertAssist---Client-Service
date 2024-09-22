@@ -5,7 +5,6 @@ import { toast } from 'react-toastify';
 
 const Navbar = () => {
   const user = useSelector((store: { user: { user: string } }) => store.user);
-  console.log(user);
   const dispatch = useDispatch();
 
   return (
@@ -54,9 +53,7 @@ const Navbar = () => {
             )}
           </button>
           <button className="border-2 border-white py-1 px-4 m-2 w-24 shadow-glow hover:shadow-md hover:text-shadow-glow">
-            <a href="#" className="hover:">
-              Expert
-            </a>
+            <Link to="/expert">Expert</Link>
           </button>
           {user.image && (
             <div className="w-11 h-11 rounded-full overflow-hidden shadow-glow border-2 border-white">

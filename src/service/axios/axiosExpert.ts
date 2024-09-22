@@ -1,19 +1,19 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { useDispatch } from "react-redux";
-import { userLogout } from "../redux/slices/userAuthSlice";
+import { expertLogout } from "../redux/slices/expertAuthSlice";
 
 
 const createAxios = (): AxiosInstance => {
-    const axiosUser: AxiosInstance = axios.create({
-        baseURL:`${import.meta.env.VITE_BASE_URL}/user`,
+    const axiosExpert: AxiosInstance = axios.create({
+        baseURL:`${import.meta.env.VITE_BASE_URL}/expert`,
         withCredentials: true,
         headers: {
             "Content-Type": "application/json"
         }
     })
-    axiosUser.interceptors.request.use(
+    axiosExpert.interceptors.request.use(
         (config: InternalAxiosRequestConfig) => {
-            const token = localStorage.getItem('userToken');
+            const token = localStorage.getItem('expertToken');
             if (token) {
                 config.headers.set('Authorization', `Bearer ${token}`);
             }
@@ -23,7 +23,7 @@ const createAxios = (): AxiosInstance => {
             return Promise.reject(error);
         }
     );
-    axiosUser.interceptors.response.use(
+    axiosExpert.interceptors.response.use(
     (response: AxiosResponse) => {
         return response;
     },
@@ -31,38 +31,38 @@ const createAxios = (): AxiosInstance => {
         const originalRequest =  error.config as InternalAxiosRequestConfig & { _retry?: boolean };
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
-            const refreshToken = localStorage.getItem('refreshToken');
+            const refreshToken = localStorage.getItem('expertRefreshToken');
             if(!refreshToken) {
-                localStorage.removeItem('userToken')
+                localStorage.removeItem('expertToken')
                 const dispatch = useDispatch()
-                dispatch(userLogout())
-                window.location.href = '/login';
+                dispatch(expertLogout())
+                window.location.href = '/expert/login';
                 return Promise.reject(error)
             }
             try {
                 const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/auth/refresh`, {token: refreshToken});
                 const newAccessToken = response.data.token;
                 const newRefreshToken = response.data.refreshToken;
-                localStorage.setItem('userToken', newAccessToken);
+                localStorage.setItem('expertToken', newAccessToken);
                 if (newRefreshToken) {
-                    localStorage.setItem('refreshToken', newRefreshToken);
+                    localStorage.setItem('expertRefreshToken', newRefreshToken);
                 }
                 originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-                axiosUser.defaults.headers['Authorization'] = `Bearer ${newAccessToken}`;
-                return axiosUser(originalRequest);
+                axiosExpert.defaults.headers['Authorization'] = `Bearer ${newAccessToken}`;
+                return axiosExpert(originalRequest);
             } catch (error) {
                 console.log(error);
-                localStorage.removeItem('userToken');
-                localStorage.removeItem('refreshToken');
+                localStorage.removeItem('expertToken');
+                localStorage.removeItem('expertRefreshToken');
                 const dispatch=useDispatch()
-                dispatch(userLogout())
-                window.location.href = '/login';
+                dispatch(expertLogout())
+                window.location.href = '/expert/login';
                 return Promise.reject(error);
             }
         }
         return Promise.reject(error);
     })
-    return axiosUser;
+    return axiosExpert;
 }
 
 export default createAxios;

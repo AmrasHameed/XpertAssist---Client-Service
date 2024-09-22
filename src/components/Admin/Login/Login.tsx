@@ -1,14 +1,12 @@
 import { Player } from '@lottiefiles/react-lottie-player';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { toast } from 'react-toastify';
-import axiosUser from '../../../service/axios/axiosUser';
 import { useDispatch } from 'react-redux';
-import { userLogin } from '../../../service/redux/slices/userAuthSlice';
 import { LoginFormValues } from '../../../interfaces/interface';
-import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
-import { jwtDecode } from 'jwt-decode';
+import { axiosAdmin } from '../../../service/axios/axiosAdmin';
+import { adminLogin } from '../../../service/redux/slices/adminAuthSlice';
 
 const validationSchema = Yup.object({
   email: Yup.string()
@@ -39,29 +37,17 @@ const Login = () => {
 
   const formHandleSubmit = async (values: LoginFormValues) => {
     try {
-      const { data } = await axiosUser().post('/loginUser', values);
+      const { data } = await axiosAdmin().post('/adminLogin', values);
       if (data.message === 'Success') {
         console.log(data, 'logindata');
-        localStorage.setItem('userToken', data.token);
-        localStorage.setItem('refreshToken', data.refreshToken);
-        dispatch(
-          userLogin({
-            user: data.name,
-            userId: data._id,
-            image: data.image,
-            loggedIn: true,
-          })
-        );
-        toast.success('User Logged in Successfully');
-        navigate('/');
-      } else if (data.message === 'UserNotFound') {
-        toast.error('User Not Found');
-      } else if (data.message === 'passwordNotMatched') {
-        toast.error('Entered password is wrong');
-      } else if (data.message === 'blocked') {
-        toast.info('Your Account is Blocked');
+        localStorage.setItem('adminToken', data.token);
+        dispatch(adminLogin({ name: data.name, loggedIn: true }));
+        toast.success('Admin Logged in Successfully');
+        navigate('/admin/dashboard');
+      } else if (data.message === 'Invalid Credentials') {
+        toast.error('Invalid Credentials');
       } else {
-        toast.error('User is not Registered, Please Sign Up!');
+        toast.error('Something went wrong');
       }
     } catch (error) {
       console.log(error);
@@ -69,43 +55,11 @@ const Login = () => {
     }
   };
 
-  const googleLogin = async (datas: CredentialResponse) => {
-    try {
-      const token: string | undefined = datas.credential;
-      if (token) {
-        const decode = jwtDecode(token) as any;
-        const { data } = await axiosUser().post('/googleLoginUser', {
-          email: decode.email,
-        });
-        if (data.message === 'Success') {
-          toast.success('Login success!');
-          localStorage.setItem('userToken', data.token);
-          localStorage.setItem('refreshToken', data.refreshToken);
-          dispatch(
-            userLogin({
-              user: data.name,
-              userId: data._id,
-              image: data.image,
-              loggedIn: true,
-            })
-          );
-          navigate('/');
-        } else if (data.message === 'Blocked') {
-          toast.error('Your Blocked By Admin');
-        } else {
-          toast.error('Not registered! Please Signup to  continue.');
-        }
-      }
-    } catch (error: any) {
-      toast.error(error);
-    }
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-between px-12">
-      <div className="w-1/2 space-y-6">
+      <div className="w-1/2 space-y-8">
         <h1 className="text-3xl font-garamond">X P E R T A S S I S T</h1>
-        <h2 className="text-3xl font-semibold">User Login</h2>
+        <h2 className="text-3xl font-semibold">Admin Login</h2>
         <p className="text-gray-600">
           Please login to continue to your account.
         </p>
@@ -124,7 +78,7 @@ const Login = () => {
             />
             <label
               htmlFor="email"
-              className="absolute left-2 -top-3.5 text-sm text-gray-600 bg-white px-1 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:-top-3.5 peer-focus:text-sm peer-focus:text-black"
+              className="absolute left-2 top-[-0.75rem] text-sm text-gray-600 bg-white px-1"
             >
               Email
             </label>
@@ -144,7 +98,7 @@ const Login = () => {
             />
             <label
               htmlFor="password"
-              className="absolute left-2 -top-3.5 text-sm text-gray-600 bg-white px-1 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:-top-3.5 peer-focus:text-sm peer-focus:text-black"
+              className="absolute left-2 top-[-0.75rem] text-sm text-gray-600 bg-white px-1"
             >
               Password
             </label>
@@ -161,27 +115,6 @@ const Login = () => {
             Sign in
           </button>
         </form>
-
-        <div className="mt-4 flex items-center justify-center">
-          <span className="text-gray-400">or</span>
-        </div>
-
-        <div className="w-full mt-3 flex items-center justify-center">
-          <GoogleLogin
-            ux_mode="popup"
-            onSuccess={googleLogin}
-            size="large"
-            shape="pill"
-            theme="filled_black"
-          />
-        </div>
-
-        <p className="mt-6 text-center text-gray-600">
-          Don't have an account?{' '}
-          <Link to={'/signup'} className="text-blue-600">
-            Sign Up
-          </Link>
-        </p>
       </div>
 
       <div className="w-1/2 flex justify-center items-center">

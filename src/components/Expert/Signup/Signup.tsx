@@ -1,13 +1,13 @@
 import { Player } from '@lottiefiles/react-lottie-player';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axiosUser from '../../../service/axios/axiosUser';
+import axiosExpert from '../../../service/axios/axiosExpert';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { toast } from 'react-toastify';
-import { SignupData, UserData } from '../../../interfaces/interface';
+import { SignupData } from '../../../interfaces/interface';
 import { useDispatch } from 'react-redux';
-import { userLogin } from '../../../service/redux/slices/userAuthSlice';
+import { expertLogin } from '../../../service/redux/slices/expertAuthSlice';
 
 const SignUp = () => {
   const [otp, setOtp] = useState<string[]>(new Array(4).fill(''));
@@ -15,13 +15,9 @@ const SignUp = () => {
   const [timeLeft, setTimeLeft] = useState<number>(30);
   const [, setIsResendVisible] = useState<boolean>(false);
 
-  const [, setUserData] = useState<UserData>({
-    user: '',
-    userId: '',
-    image: '',
-    loggedIn: false,
-  });
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
@@ -48,7 +44,7 @@ const SignUp = () => {
     setTimeLeft(30);
     setIsResendVisible(false);
     try {
-      const { data } = await axiosUser().post('/resendOtp', { email:formik.values.email, name: formik.values.name });
+      const { data } = await axiosExpert().post('/expertResendOtp', { email:formik.values.email, name: formik.values.name });
       if (data.message === 'OTP sent') {
         toast.success('OTP sent Successfully');
         setOtpPage(true);
@@ -60,60 +56,6 @@ const SignUp = () => {
     }
     console.log('Resending OTP...');
   };
-
-  const handleVerify = async (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
-    try {
-      event.preventDefault();
-      const otpCode = otp.join('');
-      const formData = new FormData();
-      formData.append('name', formik.values.name);
-      formData.append('email', formik.values.email);
-      formData.append('mobile', formik.values.mobile);
-      formData.append('password', formik.values.password);
-      formData.append('otp', otpCode.toString());
-      if (formik.values.image) {
-        formData.append('image', formik.values.image);
-      }
-      const { data } = await axiosUser().post('/registerUser', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      if (data.message === 'Success') {
-        setUserData({
-          user: data.name,
-          userId: data._id,
-          image: data.image,
-          loggedIn: true,
-        });
-        localStorage.setItem('userToken', data.token);
-        localStorage.setItem('refreshToken', data.refreshToken);
-        dispatch(
-          userLogin({
-            user: data.name,
-            userId: data._id,
-            image: data.image,
-            loggedIn: true,
-          })
-        );
-        toast.success('User registered successfully');
-        navigate('/');
-      } else if (data.message === 'UserExist') {
-        toast.error('User Already Exists');
-      } else if (data.message === 'OTP does not match or is not found.') {
-        toast.error('OTP does not match or is not found.');
-      } else {
-        toast.error('User is not Registered, Please Sign Up!');
-      }
-    } catch (error) {
-      toast.error((error as Error).message);
-    }
-  };
-
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -153,7 +95,7 @@ const SignUp = () => {
         'fileSize',
         'File too large',
         (value) => value && value.size <= 5 * 1024 * 1024
-      ) // 2MB limit
+      )
       .test(
         'fileType',
         'Unsupported File Format',
@@ -192,13 +134,65 @@ const SignUp = () => {
     },
   });
 
+  const handleVerify = async (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    try {
+      event.preventDefault();
+      const otpCode = otp.join('');
+      const formData = new FormData();
+      formData.append('name', formik.values.name);
+      formData.append('email', formik.values.email);
+      formData.append('mobile', formik.values.mobile);
+      formData.append('password', formik.values.password);
+      formData.append('otp', otpCode.toString());
+      if (formik.values.image) {
+        formData.append('image', formik.values.image);
+      }
+
+      try {
+        const { data } = await axiosExpert().post('/registerExpert', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        if (data.message === 'Success') {
+          localStorage.setItem('expertToken', data.token);
+          localStorage.setItem('expertRefreshToken', data.refreshToken);
+          dispatch(
+            expertLogin({
+              expert: data.name,
+              expertId: data._id,
+              image: data.image,
+              loggedIn: true,
+            })
+          );
+          toast.success('Expert registered successfully');
+          navigate('/expert');
+        } else if (data.message === 'UserExist') {
+          toast.error('User Already Exists');
+        } else if (data.message === 'OTP does not match or is not found.') {
+          toast.error('OTP does not match or is not found.')
+        } else {
+          toast.error('User is not Registered, Please Sign Up!');
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error('An error occurred during registration');
+      }
+    } catch (error) {
+      toast.error((error as Error).message);
+    }
+  };
+
   const signupOtp = async (email: string, name: string): Promise<void> => {
     try {
-      const { data } = await axiosUser().post('/signupOtp', { email, name });
+      const { data } = await axiosExpert().post('/expertSignupOtp', {
+        email,
+        name,
+      });
       if (data.message === 'UserExist') {
         toast.error('User Already Exists');
-      } else if(data.message === 'Failed to send OTP.') {
-        toast.error('Failed to send OTP.');
       } else {
         toast.success('OTP sent Successfully');
         setOtpPage(true);
@@ -273,12 +267,11 @@ const SignUp = () => {
           </div>
         </div>
       ) : (
-        //  Left side - Signup Form
-
         <div className="min-h-screen flex items-center justify-between px-10">
+          {/* Left side - Signup Form */}
           <div className="w-1/2 space-y-1">
             <h1 className="text-3xl font-garamond">X P E R T A S S I S T</h1>
-            <h2 className="text-xl font-semibold">User Sign Up</h2>
+            <h2 className="text-2xl font-semibold">Expert Sign Up</h2>
 
             <form onSubmit={formik.handleSubmit}>
               {/* Name Field */}
@@ -445,7 +438,7 @@ const SignUp = () => {
               </button>
             </form>
 
-            <p className=" text-center text-gray-600 text-md mt-6">
+            <p className=" text-center text-gray-600 text-md">
               Already have an account?{' '}
               <Link to={'/login'} className="text-blue-500 font-semibold">
                 Log in
@@ -459,7 +452,7 @@ const SignUp = () => {
               autoplay
               loop
               src="/Animation - 1726125252610.json"
-              style={{ height: '300px', width: '300px' }}
+              style={{ height: '400px', width: '400px' }}
             />
           </div>
         </div>

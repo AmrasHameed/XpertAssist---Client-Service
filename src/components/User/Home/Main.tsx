@@ -1,4 +1,4 @@
-import { Player } from "@lottiefiles/react-lottie-player";
+import { Player } from '@lottiefiles/react-lottie-player';
 
 const Main = () => {
   return (
@@ -10,14 +10,23 @@ const Main = () => {
           <p className="text-5xl font-semibold">
             Book trusted help <br /> for every task
           </p>
-          <button className=" border-2 border-white py-3 m-2 w-40 shadow-glow hover:shadow-md hover:text-shadow-glow text-2xl">
-            Book Now
+          <button className="border shadow-glow text-gray-50  duration-300 relative group cursor-pointer   overflow-hidden h-12 w-48  bg-white p-2  font-extrabold hover:bg-cyan-300">
+            <div className="absolute group-hover:-top-1 group-hover:-right-2 z-10 w-16 h-16 rounded-full group-hover:scale-150  duration-700 right-12 top-12 bg-cyan-200"></div>
+            <div className="absolute group-hover:-top-1 group-hover:-right-2 z-10 w-12 h-12 rounded-full group-hover:scale-150  duration-700 right-20 -top-6 bg-cyan-500"></div>
+            <div className="absolute group-hover:-top-1 group-hover:-right-2 z-10 w-8 h-8   rounded-full group-hover:scale-150  duration-700 right-32 top-6 bg-cyan-700"></div>
+            <div className="absolute group-hover:-top-1 group-hover:-right-2 z-10 w-4 h-4   rounded-full group-hover:scale-150  duration-700 right-2 top-12 bg-cyan-900"></div>
+            <p className="z-10 absolute bottom-2 left-2 text-black ">Book Now</p>
           </button>
         </div>
 
         {/* Right Side: Image */}
         <div className="w-1/2 mt-5">
-          <Player autoplay loop src={"/Animation - 1726033694885.json"} style={{ height: '80%', width: '80%',background:"transparent" }} />
+          <Player
+            autoplay
+            loop
+            src={'/Animation - 1726033694885.json'}
+            style={{ height: '80%', width: '80%', background: 'transparent' }}
+          />
         </div>
       </div>
     </div>

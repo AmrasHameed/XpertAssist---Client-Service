@@ -18,3 +18,4 @@ export interface SignupData {
   password: string;
   confirmPassword: string;
 }
+

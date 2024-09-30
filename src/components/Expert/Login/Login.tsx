@@ -48,7 +48,11 @@ const Login = () => {
           expertLogin({
             expert: data.name,
             expertId: data._id,
+            email: data.email,
+            service: data.service,
+            mobile: data.mobile,
             image: data.image,
+            isVerified: data.isVerified,
             loggedIn: true,
           })
         );
@@ -84,7 +88,11 @@ const Login = () => {
             expertLogin({
               expert: data.name,
               expertId: data._id,
+              email: data.email,
+              service: data.service,
+              mobile: data.mobile,
               image: data.image,
+              isVerified: data.isVerified,
               loggedIn: true,
             })
           );

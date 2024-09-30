@@ -1,3 +1,4 @@
+import { Tooltip } from 'react-tooltip';
 import { Player } from '@lottiefiles/react-lottie-player';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -5,11 +6,14 @@ import axiosExpert from '../../../service/axios/axiosExpert';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { toast } from 'react-toastify';
-import { SignupData } from '../../../interfaces/interface';
-import { useDispatch } from 'react-redux';
+import { Service, SignupData } from '../../../interfaces/interface';
+import { useDispatch, useSelector } from 'react-redux';
 import { expertLogin } from '../../../service/redux/slices/expertAuthSlice';
 
 const SignUp = () => {
+  const services = useSelector(
+    (state: { services: { services: Service[] } }) => state.services.services
+  );
   const [otp, setOtp] = useState<string[]>(new Array(4).fill(''));
   const [otpPage, setOtpPage] = useState<boolean | null>(null);
   const [timeLeft, setTimeLeft] = useState<number>(30);
@@ -18,6 +22,13 @@ const SignUp = () => {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleSelect = (service) => {
+    formik.setFieldValue('service', service._id);
+    setIsOpen(false); 
+  };
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
@@ -39,12 +50,15 @@ const SignUp = () => {
     }
   };
 
-  const handleResend = async() => {
+  const handleResend = async () => {
     setOtp(new Array(4).fill(''));
     setTimeLeft(30);
     setIsResendVisible(false);
     try {
-      const { data } = await axiosExpert().post('/expertResendOtp', { email:formik.values.email, name: formik.values.name });
+      const { data } = await axiosExpert().post('/expertResendOtp', {
+        email: formik.values.email,
+        name: formik.values.name,
+      });
       if (data.message === 'OTP sent') {
         toast.success('OTP sent Successfully');
         setOtpPage(true);
@@ -119,6 +133,7 @@ const SignUp = () => {
       password: '',
       confirmPassword: '',
       image: null,
+      service: '',
     },
     validationSchema,
     onSubmit: async (values: SignupData) => {
@@ -144,6 +159,7 @@ const SignUp = () => {
       formData.append('name', formik.values.name);
       formData.append('email', formik.values.email);
       formData.append('mobile', formik.values.mobile);
+      formData.append('service', formik.values.service);
       formData.append('password', formik.values.password);
       formData.append('otp', otpCode.toString());
       if (formik.values.image) {
@@ -163,7 +179,11 @@ const SignUp = () => {
             expertLogin({
               expert: data.name,
               expertId: data._id,
+              email: data.email,
+              service: data.service,
+              mobile: data.mobile,
               image: data.image,
+              isVerified: data.isVerified,
               loggedIn: true,
             })
           );
@@ -172,7 +192,7 @@ const SignUp = () => {
         } else if (data.message === 'UserExist') {
           toast.error('User Already Exists');
         } else if (data.message === 'OTP does not match or is not found.') {
-          toast.error('OTP does not match or is not found.')
+          toast.error('OTP does not match or is not found.');
         } else {
           toast.error('User is not Registered, Please Sign Up!');
         }
@@ -346,6 +366,56 @@ const SignUp = () => {
                 ) : null}
               </div>
 
+              {/* Service Selection Field */}
+              <div className="relative mb-4">
+                <div
+                  className="peer w-full p-2 border bg-gray-200 border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black cursor-pointer flex items-center justify-between"
+                  onClick={() => setIsOpen(!isOpen)}
+                >
+                  <span className="flex-2">
+                    {formik.values.service
+                      ? services.find(
+                          (service) => service._id === formik.values.service
+                        )?.name
+                      : 'Select a service you want to provide'}
+                  </span>
+                  <span className="flex-shrink-2">
+                    <span
+                      className={`material-symbols-outlined w-6 h-6 transition-transform ${
+                        isOpen ? 'transform rotate-180' : ''
+                      }`}
+                    >
+                      arrow_drop_down
+                    </span>
+                  </span>
+                </div>
+                {isOpen && (
+                  <ul className="absolute w-full bg-white border border-gray-300 rounded mt-1 z-10">
+                    {services.map((service) => (
+                      <li
+                        key={service._id}
+                        className="p-2 hover:bg-gray-200 relative"
+                        onClick={() => handleSelect(service)}
+                        data-tooltip-id={`tooltip-${service._id}`}
+                      >
+                        {service.name}
+                        <Tooltip
+                          id={`tooltip-${service._id}`}
+                          className="bg-gray-700 text-white"
+                        >
+                          {service.description}
+                        </Tooltip>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {formik.errors.service && formik.touched.service && (
+                  <div className="text-red-600 text-sm">
+                    {formik.errors.service}
+                  </div>
+                )}
+              </div>
+
               {/* Profile Image Field */}
               <div className="relative mb-4">
                 <input
@@ -440,7 +510,10 @@ const SignUp = () => {
 
             <p className=" text-center text-gray-600 text-md">
               Already have an account?{' '}
-              <Link to={'/login'} className="text-blue-500 font-semibold">
+              <Link
+                to={'/expert/login'}
+                className="text-blue-500 font-semibold"
+              >
                 Log in
               </Link>
             </p>

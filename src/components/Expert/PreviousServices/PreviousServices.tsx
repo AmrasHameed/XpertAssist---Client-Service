@@ -1,11 +1,10 @@
 import { useState } from 'react';
-import Navbar from './Navbar';
-import Sidebar from './Sidebar';
-import Dashboard from './Dashboard';
+import Navbar from '../Home/Navbar';
+import Sidebar from '../Home/Sidebar';
+import PrevServices from './PrevServices';
 
-const Home = () => {
-  const [selectedOption, setSelectedOption] = useState('Dashboard');
-
+const PreviousServices = () => {
+  const [selectedOption, setSelectedOption] = useState('Previous Services');
   return (
     <div className="flex min-h-screen">
       <Sidebar
@@ -15,11 +14,11 @@ const Home = () => {
       <div className="flex-grow flex flex-col">
         <Navbar />
         <div className="flex-grow p-6 bg-gray-100">
-          <Dashboard />
+          <PrevServices />
         </div>
       </div>
     </div>
   );
 };
 
-export default Home;
+export default PreviousServices;

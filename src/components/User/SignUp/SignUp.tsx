@@ -5,7 +5,7 @@ import axiosUser from '../../../service/axios/axiosUser';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { toast } from 'react-toastify';
-import { SignupData, UserData } from '../../../interfaces/interface';
+import { SignupData } from '../../../interfaces/interface';
 import { useDispatch } from 'react-redux';
 import { userLogin } from '../../../service/redux/slices/userAuthSlice';
 
@@ -15,12 +15,6 @@ const SignUp = () => {
   const [timeLeft, setTimeLeft] = useState<number>(30);
   const [, setIsResendVisible] = useState<boolean>(false);
 
-  const [, setUserData] = useState<UserData>({
-    user: '',
-    userId: '',
-    image: '',
-    loggedIn: false,
-  });
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -82,12 +76,6 @@ const SignUp = () => {
         },
       });
       if (data.message === 'Success') {
-        setUserData({
-          user: data.name,
-          userId: data._id,
-          image: data.image,
-          loggedIn: true,
-        });
         localStorage.setItem('userToken', data.token);
         localStorage.setItem('refreshToken', data.refreshToken);
         dispatch(
@@ -459,7 +447,7 @@ const SignUp = () => {
               autoplay
               loop
               src="/Animation - 1726125252610.json"
-              style={{ height: '300px', width: '300px' }}
+              style={{ height: '400px', width: '400px' }}
             />
           </div>
         </div>

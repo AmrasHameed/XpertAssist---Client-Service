@@ -1,7 +1,8 @@
-import Header from "./NavBar"
-import Main from "./Main"
 import Sidebar from "./SideBar"
 import { useState } from "react";
+import Dashboard from "./Dashboard";
+import NavBar from "./NavBar";
+
 
 const Home = () => {
   const [selectedOption, setSelectedOption] = useState("Dashboard");
@@ -9,8 +10,8 @@ const Home = () => {
     <div className="flex">
       <Sidebar selectedOption={selectedOption} setSelectedOption={setSelectedOption} />
       <div className="flex-1 flex flex-col">
-        <Header />
-        <Main selectedOption={selectedOption}/>
+        <NavBar />
+        <Dashboard />
       </div>
     </div>
   )

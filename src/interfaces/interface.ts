@@ -17,5 +17,13 @@ export interface SignupData {
   image: File | null;
   password: string;
   confirmPassword: string;
+  service: string;
 }
 
+export type Service = {
+  _id: string;
+  name: string;
+  price: number;
+  serviceImage: string;
+  description: string;
+};

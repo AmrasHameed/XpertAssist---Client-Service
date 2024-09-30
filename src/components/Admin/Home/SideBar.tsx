@@ -1,3 +1,5 @@
+import React from "react";
+import { Link } from "react-router-dom";
 import './navbar.css';
 
 interface SidebarProps {
@@ -7,11 +9,11 @@ interface SidebarProps {
 
 const Sidebar = ({ selectedOption, setSelectedOption }: SidebarProps) => {
   const options = [
-    { name: "Dashboard", icon: "dashboard" },
-    { name: "User Management", icon: "manage_accounts" },
-    { name: "Expert Management", icon: "supervisor_account" },
-    { name: "Service Management", icon: "home_repair_service" },
-    { name: "Expert Approval", icon: "new_releases" },
+    { name: "Dashboard", icon: "dashboard", path: "/admin/dashboard" },
+    { name: "User Management", icon: "manage_accounts", path: "/admin/user-management" },
+    { name: "Expert Management", icon: "supervisor_account", path: "/admin/expert-management" },
+    { name: "Service Management", icon: "home_repair_service", path: "/admin/service-management" },
+    { name: "Expert Approval", icon: "new_releases", path: "/admin/expert-approval" },
   ];
 
   return (
@@ -25,8 +27,8 @@ const Sidebar = ({ selectedOption, setSelectedOption }: SidebarProps) => {
       </div>
       <div className="flex flex-col items-start space-y-4 mt-8">
         {options.map((option) => (
-          <a
-            href="#"
+          <Link
+            to={option.path}
             key={option.name}
             onClick={() => setSelectedOption(option.name)}
             className={`flex items-center space-x-4 text-lg px-4 py-2 w-full ${
@@ -39,7 +41,7 @@ const Sidebar = ({ selectedOption, setSelectedOption }: SidebarProps) => {
               {option.icon}
             </span>
             <span>{option.name}</span>
-          </a>
+          </Link>
         ))}
       </div>
     </div>

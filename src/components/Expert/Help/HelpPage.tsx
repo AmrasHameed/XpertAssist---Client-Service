@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import Navbar from './Navbar';
-import Sidebar from './Sidebar';
-import Dashboard from './Dashboard';
+import { useState } from "react";
+import Navbar from "../Home/Navbar"
+import Sidebar from "../Home/Sidebar"
+import Help from "./Help"
 
-const Home = () => {
-  const [selectedOption, setSelectedOption] = useState('Dashboard');
+const HelpPage = () => {
+  const [selectedOption, setSelectedOption] = useState('Help');
 
   return (
     <div className="flex min-h-screen">
@@ -13,13 +13,13 @@ const Home = () => {
         setSelectedOption={setSelectedOption}
       />
       <div className="flex-grow flex flex-col">
-        <Navbar />
+        <Navbar/>
         <div className="flex-grow p-6 bg-gray-100">
-          <Dashboard />
+          <Help />
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Home;
+export default HelpPage

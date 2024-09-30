@@ -6,7 +6,7 @@ import Services from "./Services"
 const Home = () => {
   return (
     <div>
-        <Navbar/>
+        <Navbar activePage="home"/>
         <Main />
         <Services />
         <Footer />

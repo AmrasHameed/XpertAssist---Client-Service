@@ -41,7 +41,7 @@ const createAxios = (): AxiosInstance => {
             }
             try {
                 const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/auth/refresh`, {token: refreshToken});
-                const newAccessToken = response.data.token;
+                const newAccessToken = response.data.accesstoken;
                 const newRefreshToken = response.data.refreshToken;
                 localStorage.setItem('userToken', newAccessToken);
                 if (newRefreshToken) {

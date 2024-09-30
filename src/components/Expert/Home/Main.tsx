@@ -1,7 +1,7 @@
-import Dashboard from "../pages/Dashboard";
-import Earnings from "../pages/Earnings";
-import Help from "../pages/Help";
-import PrevServices from "../pages/PrevServices";
+import Dashboard from "./Dashboard";
+import Earnings from "../Earnings/Earnings";
+import Help from "../Help/Help";
+import PrevServices from "../PreviousServices/PrevServices";
 import Profile from "../pages/Profile";
 
 

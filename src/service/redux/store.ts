@@ -12,12 +12,14 @@ import {
 import storage from 'redux-persist/lib/storage';
 
 import userAuthSlice from './slices/userAuthSlice';
-import adminAuthSlice from './slices/adminAuthSlice'
+import adminAuthSlice from './slices/adminAuthSlice';
 import expertAuthSlice from './slices/expertAuthSlice';
+import serviceSlice from './slices/serviceSlice';
 
 const userPersistConfig = { key: 'userAuth', storage, version: 1 };
 const adminPersistConfig = { key: 'adminAuth', storage, version: 1 };
 const expertPersistConfig = { key: 'expertAuth', storage, version: 1 };
+const servicePersistConfig = { key: 'services', storage, version: 1 };
 
 const userAuthPersistReducer = persistReducer(
   userPersistConfig,
@@ -31,11 +33,16 @@ const expertAuthPersistReducer = persistReducer(
   expertPersistConfig,
   expertAuthSlice.reducer
 );
+const servicePersistReducer = persistReducer(
+  servicePersistConfig,
+  serviceSlice.reducer
+);
 export const store = configureStore({
   reducer: {
     user: userAuthPersistReducer,
     admin: adminAuthPersistReducer,
     expert: expertAuthPersistReducer,
+    services: servicePersistReducer,
   },
   middleware: (getDefaultMiddleware) => {
     const middleware = getDefaultMiddleware({

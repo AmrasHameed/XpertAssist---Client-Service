@@ -1,14 +1,14 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface ExpertAuthState {
-    expert: string;
-    expertId: string;
-    email: string;
-    service: string;
-    mobile: string;
-    image: string;
-    isVerified: string;
-    loggedIn: boolean;
+    expert?: string;
+    expertId?: string;
+    email?: string;
+    service?: string;
+    mobile?: string;
+    image?: string;
+    isVerified?: string;
+    loggedIn?: boolean;
 }
 
 const initialState: ExpertAuthState = {

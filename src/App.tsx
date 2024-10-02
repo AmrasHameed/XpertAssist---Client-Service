@@ -20,6 +20,8 @@ import ExpertProfile from './pages/expert/ExpertProfile';
 import ExpertPrevService from './pages/expert/ExpertPrevService';
 import ExpertEarning from './pages/expert/ExpertEarning';
 import ExpertHelpPage from './pages/expert/ExpertHelpPage';
+import AdminExpertApprove from './pages/admin/AdminExpertApprove';
+import ExpertPrivateRoute from './utils/ExpertPrivateRoute';
 
 function App() {
   const  user  = useSelector((store:{ user: { loggedIn: boolean } })=>store.user.loggedIn);
@@ -36,13 +38,15 @@ function App() {
           <Route path="/login" element={user ? <Navigate to={'/'}/>:<LoginPage/>} />
           <Route path="/signup" element={user ? <Navigate to={'/'}/>:<SignUpPage/>} />
 
-          <Route path="/expert" element={expert?<ExpertHomePage />:<ExpertLogin/>} />
-          <Route path="/expert/login" element={expert? <Navigate to={'/expert'}/>:<ExpertLogin />} />
-          <Route path="/expert/signup" element={expert? <Navigate to={'/expert'}/>:<ExpertSignup />} />
-          <Route path="/expert/profile" element={expert? <ExpertProfile/>:<ExpertLogin />} />
-          <Route path="/expert/previous-services" element={expert? <ExpertPrevService/>:<ExpertLogin />} />
-          <Route path="/expert/earnings" element={expert? <ExpertEarning />:<ExpertLogin />} />
-          <Route path="/expert/help" element={expert? <ExpertHelpPage />:<ExpertLogin />} />
+          <Route path="/expert/login" element={<ExpertLogin />} />
+          <Route path="/expert" element={<ExpertPrivateRoute />}>
+            <Route index element={<ExpertHomePage />} />
+            <Route path="signup" element={<ExpertSignup />} />
+            <Route path="profile" element={<ExpertProfile />} />
+            <Route path="previous-services" element={<ExpertPrevService />} />
+            <Route path="earnings" element={<ExpertEarning />} />
+            <Route path="help" element={<ExpertHelpPage />} />
+          </Route>
 
 
           <Route path='/admin' element={admin? <Navigate to={'/admin/dashboard'}/> :<AdminLoginPage/>}/>
@@ -53,6 +57,7 @@ function App() {
           <Route path='/admin/expert-management' element={admin? <AdminExpertManage/> : <Navigate to={'/admin'}/>}/>
           <Route path='/admin/expert-approval' element={admin? <AdminExpertApproval/> : <Navigate to={'/admin'}/>}/>
           <Route path='/admin/update/:id' element={admin? <AdminEditService/> : <Navigate to={'/admin'}/>} />
+          <Route path='/admin/expert/:id' element={admin? <AdminExpertApprove/> : <Navigate to={'/admin'}/>} />
         </Routes>
       </BrowserRouter>
     </>

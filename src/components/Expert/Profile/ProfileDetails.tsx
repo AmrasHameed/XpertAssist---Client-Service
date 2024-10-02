@@ -3,8 +3,10 @@ import * as Yup from 'yup';
 import axiosExpert from '../../../service/axios/axiosExpert';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { toast } from 'react-toastify';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Service } from '../../../interfaces/interface';
+import Select from 'react-select';
+import { expertLogin } from '../../../service/redux/slices/expertAuthSlice';
 
 interface ProfileValues {
   id: string;
@@ -13,6 +15,19 @@ interface ProfileValues {
   mobile: string;
   expertImage: string;
 }
+
+interface VerifyFormValues {
+  govIdType: string;
+  govIdNumber: string;
+  document: File | null;
+}
+
+type GovIdType =
+  | 'passport'
+  | 'aadhaar'
+  | 'driver-license'
+  | 'voter-id'
+  | 'pan-card';
 
 interface ProfileUpdates {
   name?: string;
@@ -37,6 +52,7 @@ const ProfileDetails = () => {
       };
     }) => store.expert
   );
+  const dispatch = useDispatch();
   const [editMode, setEditMode] = useState<boolean>(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -64,6 +80,90 @@ const ProfileDetails = () => {
       .required('Mobile number is required'),
   });
 
+  const handleVerifySubmit = async (values: VerifyFormValues) => {
+    try {
+      const formData = new FormData();
+      formData.append('govIdType', values.govIdType);
+      formData.append('govIdNumber', values.govIdNumber);
+      if (values.document) {
+        formData.append('document', values.document);
+      }
+      try {
+        const { data } = await axiosExpert().post(
+          `/verifyExpert/${expert.expertId}`,
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        );
+        if (data.message === 'success') {
+          dispatch(
+            expertLogin({
+              ...expert,
+              isVerified: data.isVerified,
+            })
+          );
+          toast.success('Verification Requested successfully');
+          setVerify(false);
+        } else {
+          toast.error(data.message);
+        }
+      } catch (error) {
+        toast.error((error as Error).message);
+      }
+    } catch (error) {
+      toast.error((error as Error).message);
+    }
+  };
+
+  const idNumberPatterns: Record<GovIdType, RegExp> = {
+    passport: /^[a-zA-Z0-9]{5,17}$/,
+    aadhaar: /^\d{12}$/,
+    'driver-license': /^[a-zA-Z0-9]{5,15}$/,
+    'voter-id': /^[a-zA-Z0-9]{1,15}$/,
+    'pan-card': /^[A-Z]{5}\d{4}[A-Z]{1}$/,
+  };
+
+  const verificationSchema = Yup.object({
+    govIdType: Yup.string().required('Please select the type of government ID'),
+    govIdNumber: Yup.string()
+      .required('Please enter your ID number')
+      .test(
+        'matches-pattern',
+        'Invalid ID number format for the selected ID type',
+        function (value) {
+          const { govIdType } = this.parent;
+          if (value && govIdType) {
+            const pattern = idNumberPatterns[govIdType as GovIdType];
+            return pattern ? pattern.test(value) : false;
+          }
+          return false;
+        }
+      ),
+    document: Yup.mixed()
+      .required('Please upload your document')
+      .test(
+        'fileSize',
+        'File too large',
+        (value) => value && value.size <= 5 * 1024 * 1024
+      )
+      .test(
+        'fileType',
+        'Unsupported File Format',
+        (value) =>
+          value &&
+          [
+            'image/jpg',
+            'image/jpeg',
+            'image/png',
+            'image/avif',
+            'image/webp',
+          ].includes(value.type)
+      ),
+  });
+
   const toggleEditMode = (): void => {
     setEditMode(!editMode);
     if (editMode) {
@@ -88,7 +188,7 @@ const ProfileDetails = () => {
   };
 
   const handleVerify = () => {
-    setVerify(true)
+    setVerify(true);
   };
 
   const handleSubmit = async (values: ProfileValues): Promise<void> => {
@@ -140,11 +240,146 @@ const ProfileDetails = () => {
     }
   };
 
+  const options = [
+    { value: 'passport', label: 'Passport' },
+    { value: 'aadhaar', label: 'Aadhaar Card' },
+    { value: 'driver-license', label: "Driver's License" },
+    { value: 'voter-id', label: 'Voter ID' },
+    { value: 'pan-card', label: 'PAN Card' },
+  ];
+
   return (
     <>
       {verify ? (
         <div className="p-8 w-3/4 bg-white rounded-lg shadow-2xl border-2 ml-4">
-          
+          <h2 className="text-2xl font-bold mb-6">KYC Verification</h2>
+          <Formik
+            initialValues={{ govIdType: '', govIdNumber: '', document: null }}
+            validationSchema={verificationSchema}
+            onSubmit={handleVerifySubmit}
+          >
+            {({ setFieldValue, values }) => (
+              <Form>
+                <div className="mb-4">
+                  <label
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                    htmlFor="gov-id-type"
+                  >
+                    Type of Government ID
+                  </label>
+                  <Select
+                    id="gov-id-type"
+                    name="govIdType"
+                    options={options}
+                    value={options.find(
+                      (option) => option.value === values.govIdType
+                    )}
+                    onChange={(option) =>
+                      setFieldValue('govIdType', option.value)
+                    }
+                    classNamePrefix="react-select"
+                    styles={{
+                      option: (provided, state) => ({
+                        ...provided,
+                        color: state.isSelected ? 'white' : 'black',
+                        backgroundColor: state.isSelected
+                          ? 'black'
+                          : state.isFocused
+                          ? '#c5c6c7'
+                          : 'white',
+                        ':hover': {
+                          backgroundColor: '#c5c6c7',
+                          color: 'black',
+                        },
+                      }),
+                      control: (provided) => ({
+                        ...provided,
+                        border: '2px solid #000000',
+                        boxShadow: 'initial',
+                        '&:hover': {
+                          border: '2px solid #000000',
+                        },
+                      }),
+                    }}
+                  />
+                  <ErrorMessage
+                    name="govIdType"
+                    component="div"
+                    className="text-red-500 text-sm mt-1"
+                  />
+                </div>
+
+                {/* Government ID Number */}
+                <div className="mb-4">
+                  <label
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                    htmlFor="gov-id-number"
+                  >
+                    Government ID Number
+                  </label>
+                  <Field
+                    type="text"
+                    id="gov-id-number"
+                    name="govIdNumber"
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
+                    placeholder="Enter your ID number"
+                  />
+                  <ErrorMessage
+                    name="govIdNumber"
+                    component="div"
+                    className="text-red-500 text-sm mt-1"
+                  />
+                </div>
+
+                {/* Upload Documents */}
+                <div className="mb-4">
+                  <label
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                    htmlFor="documents"
+                  >
+                    Upload Document
+                  </label>
+                  <input
+                    type="file"
+                    id="document"
+                    name="document"
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
+                    onChange={(event) => {
+                      if (
+                        event.currentTarget.files &&
+                        event.currentTarget.files[0]
+                      ) {
+                        setFieldValue('document', event.currentTarget.files[0]);
+                      }
+                    }}
+                  />
+                  <ErrorMessage
+                    name="document"
+                    component="div"
+                    className="text-red-500 text-sm mt-1"
+                  />
+                </div>
+
+                {/* Buttons */}
+                <div className="flex justify-between">
+                  <button
+                    className="bg-gray-800 hover:bg-black text-white font-bold py-2 px-4 rounded"
+                    type="submit"
+                  >
+                    Submit
+                  </button>
+                  <button
+                    className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+                    onClick={() => {
+                      setVerify(false);
+                    }}
+                  >
+                    Back
+                  </button>
+                </div>
+              </Form>
+            )}
+          </Formik>
         </div>
       ) : (
         <div className="p-8 w-3/4 bg-white rounded-lg shadow-2xl border-2 ml-4">
@@ -201,6 +436,22 @@ const ProfileDetails = () => {
                 <p className="text-yellow-500 font-semibold">
                   Verification Pending
                 </p>
+              )}
+              {expert.isVerified === 'rejected' && (
+                <div className='flex flex-col items-end'>
+                  <p className="text-red-500 font-semibold">
+                    Verification Rejected
+                  </p>
+                  <p className='text-sm text-gray-400'>Check mail for details</p>
+                  <div className="text-right m-1">
+                    <button
+                      className="bg-gray-800 text-white py-1 px-3 rounded hover:bg-black"
+                      onClick={handleVerify}
+                    >
+                      Try Again
+                    </button>
+                  </div>
+                </div>
               )}
             </div>
           </div>

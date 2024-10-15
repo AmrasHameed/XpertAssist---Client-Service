@@ -49,6 +49,8 @@ const Login = () => {
             user: data.name,
             userId: data._id,
             image: data.image,
+            email: data.email,
+            mobile: data.mobile,
             loggedIn: true,
           })
         );
@@ -86,12 +88,14 @@ const Login = () => {
               user: data.name,
               userId: data._id,
               image: data.image,
+              email: data.email,
+              mobile: data.mobile,
               loggedIn: true,
             })
           );
           navigate('/');
-        } else if (data.message === 'Blocked') {
-          toast.error('Your Blocked By Admin');
+        } else if (data.message === 'blocked') {
+          toast.info('You are Blocked By Admin');
         } else {
           toast.error('Not registered! Please Signup to  continue.');
         }
@@ -132,6 +136,7 @@ const Login = () => {
               <div className="text-red-500 text-sm">{formik.errors.email}</div>
             ) : null}
           </div>
+
           <div className="relative mb-6">
             <input
               type="password"
@@ -154,6 +159,15 @@ const Login = () => {
               </div>
             ) : null}
           </div>
+          <div className="text-left -mt-2 mb-4">
+            <Link
+              to={'/forgot-password'}
+              className="text-blue-600 hover:underline"
+            >
+              Forgot Password?
+            </Link>
+          </div>
+
           <button
             type="submit"
             className="w-full bg-black text-white p-2 rounded-lg hover:bg-gray-800"

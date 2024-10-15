@@ -6,6 +6,10 @@ import { Player } from '@lottiefiles/react-lottie-player';
 import { useNavigate, useParams } from 'react-router-dom';
 import { axiosAdmin } from '../../../service/axios/axiosAdmin';
 
+
+const BUCKET =  import.meta.env.VITE_AWS_S3_BUCKET;
+const REGION =  import.meta.env.VITE_AWS_S3_REGION;
+
 const EditService = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -23,7 +27,7 @@ const EditService = () => {
         price: data.price,
         image: '',
       });
-      setImageUrl(data.serviceImage);
+      setImageUrl(`https://${BUCKET}.s3.${REGION}.amazonaws.com/${data.serviceImage}`);
     } catch (error) {
       toast.error((error as Error).message);
     }

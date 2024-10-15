@@ -13,6 +13,9 @@ import { setServices } from '../../../service/redux/slices/serviceSlice';
 import { Service } from '../../../interfaces/interface';
 
 
+const BUCKET =  import.meta.env.VITE_AWS_S3_BUCKET;
+const REGION =  import.meta.env.VITE_AWS_S3_REGION;
+
 const Services = () => {
   const [service, setService] = useState<Service[]>([]);
   const dispatch = useDispatch()
@@ -69,7 +72,7 @@ const Services = () => {
               <div className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col border-2 transition-shadow duration-200 ease-in hover:scale-95 hover:shadow-none h-[400px]">
                 <img
                   className="w-full h-[200px] object-cover"
-                  src={service.serviceImage}
+                  src={service.serviceImage?`https://${BUCKET}.s3.${REGION}.amazonaws.com/${service.serviceImage}`:'image'}
                   alt={service.name}
                 />
                 <div className="flex-1 p-6 flex flex-col">

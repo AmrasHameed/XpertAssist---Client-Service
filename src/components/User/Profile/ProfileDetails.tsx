@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import * as Yup from 'yup';
 import axiosUser from '../../../service/axios/axiosUser';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { toast } from 'react-toastify';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { userLogin } from '../../../service/redux/slices/userAuthSlice';
 
 interface ProfileValues {
   id: string;
@@ -19,39 +20,23 @@ interface ProfileUpdates {
   userImage?: File | null;
 }
 
+const BUCKET =  import.meta.env.VITE_AWS_S3_BUCKET;
+const REGION =  import.meta.env.VITE_AWS_S3_REGION;
+
+
 const ProfileDetails = () => {
-  const user = useSelector((store: { user: { userId: string } }) => store.user);
+  const user = useSelector((store: { user: {user:string, userId: string, email:string, mobile:string, image:string } }) => store.user);
+  const dispatch = useDispatch()
   const [editMode, setEditMode] = useState<boolean>(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [initialValues, setInitialValues] = useState<ProfileValues>({
-    id: '',
-    name: '',
-    email: '',
-    mobile: '',
-    userImage: '',
+    id: user.userId || '',
+    name: user.user || '',
+    email: user.email || '',
+    mobile: user.mobile || '',
+    userImage: user.image || '',
   });
-
-  useEffect(() => {
-    if (user?.userId) {
-      fetchServiceData();
-    }
-  }, []);
-
-  const fetchServiceData = async (): Promise<void> => {
-    try {
-      const { data } = await axiosUser().get(`/getUser/${user?.userId}`);
-      if (data.message === 'success') {
-        setInitialValues(data);
-        setPreviewImage(data.userImage);
-      } else {
-        toast.error('No Services Found');
-      }
-    } catch (error) {
-      toast.error((error as Error).message);
-    }
-  };
-
   const validationSchema = Yup.object({
     name: Yup.string()
       .min(2, 'Name should be at least 2 characters long')
@@ -60,16 +45,14 @@ const ProfileDetails = () => {
       .matches(/^\d{10}$/, 'Must have 10 digits')
       .required('Mobile number is required'),
   });
-
   const toggleEditMode = (): void => {
     setEditMode(!editMode);
     if (editMode) {
       setSelectedImage(null);
-      setPreviewImage(initialValues.userImage);
+      setPreviewImage(initialValues.userImage?`https://${BUCKET}.s3.${REGION}.amazonaws.com/${initialValues.userImage}`:'');
       setInitialValues(initialValues);
     }
   };
-
   const handleImageChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ): void => {
@@ -122,8 +105,14 @@ const ProfileDetails = () => {
         }
       );
       if (data.message === 'success') {
+        console.log(data)
         setEditMode(false);
-        window.location.reload()
+        dispatch(userLogin({
+          ...user,
+          user: data.name,
+          mobile: data.mobile,
+          image: data.userImage,
+        }))
         toast.success('Profile updated successfully');
       } else {
         toast.error(data.message);
@@ -138,7 +127,7 @@ const ProfileDetails = () => {
      <div className="flex items-center mb-6 relative">
         <div className="relative">
           <img
-            src={previewImage || initialValues.userImage}
+            src={previewImage || `https://${BUCKET}.s3.${REGION}.amazonaws.com/${user.image}` || 'placeholder-image-url'}
             alt="profile"
             className="w-16 h-16 rounded-full mr-4"
           />
@@ -155,8 +144,8 @@ const ProfileDetails = () => {
           )}
         </div>
         <div>
-          <p className="font-bold">{initialValues.name}</p>
-          <p className="text-gray-500">{initialValues.email}</p>
+          <p className="font-bold">{user.user}</p>
+          <p className="text-gray-500">{user.email}</p>
         </div>
       </div>
 
@@ -186,13 +175,13 @@ const ProfileDetails = () => {
                     />
                   </div>
                 ) : (
-                  <span className="text-gray-500">{initialValues.name}</span>
+                  <span className="text-gray-500">{user.user}</span>
                 )}
               </div>
 
               <div className="flex justify-between py-4">
                 <span className="font-semibold">Email account</span>
-                <span className="text-gray-500">{initialValues.email}</span>
+                <span className="text-gray-500">{user.email}</span>
               </div>
 
               <div className="flex justify-between py-4">
@@ -211,7 +200,7 @@ const ProfileDetails = () => {
                     />
                   </div>
                 ) : (
-                  <span className="text-gray-500">{initialValues.mobile}</span>
+                  <span className="text-gray-500">{user.mobile}</span>
                 )}
               </div>
 

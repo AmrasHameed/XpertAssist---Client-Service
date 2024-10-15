@@ -33,6 +33,9 @@ interface Expert {
   verificationDetails: VerificationDetails;
 }
 
+const BUCKET =  import.meta.env.VITE_AWS_S3_BUCKET;
+const REGION =  import.meta.env.VITE_AWS_S3_REGION;
+
 const ExpertDetails = () => {
   const services = useSelector(
     (state: { services: { services: Service[] } }) => state.services.services
@@ -142,7 +145,7 @@ const ExpertDetails = () => {
                 {expert.expertImage && (
                   <div className="flex-shrink-0">
                     <img
-                      src={expert.expertImage}
+                      src={expert?.expertImage?`https://${BUCKET}.s3.${REGION}.amazonaws.com/${expert.expertImage}`:'image'}
                       alt={expert.name}
                       className="rounded-full w-24 h-24 object-cover shadow-lg border-2 border-gray-200"
                     />
@@ -198,7 +201,7 @@ const ExpertDetails = () => {
                     {expert.verificationDetails.document && (
                       <img
                         className="w-full h-auto"
-                        src={expert.verificationDetails.document}
+                        src={expert?.verificationDetails?.document?`https://${BUCKET}.s3.${REGION}.amazonaws.com/${expert.verificationDetails.document}`:'image'}
                       />
                     )}
                   </div>

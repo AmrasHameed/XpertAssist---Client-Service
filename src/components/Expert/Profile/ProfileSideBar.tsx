@@ -11,6 +11,9 @@ interface ProfileSideBarProps {
   onOptionSelect: (option: Option) => void;
 }
 
+const BUCKET =  import.meta.env.VITE_AWS_S3_BUCKET;
+const REGION =  import.meta.env.VITE_AWS_S3_REGION;
+
 const ProfileSideBar = ({ onOptionSelect }: ProfileSideBarProps) => {
   const expert = useSelector(
     (store: {
@@ -35,7 +38,7 @@ const ProfileSideBar = ({ onOptionSelect }: ProfileSideBarProps) => {
       <div className="profile-card mb-8">
         <div className="flex items-center mb-4">
           <img
-            src={expert.image}
+            src={expert.image?`https://${BUCKET}.s3.${REGION}.amazonaws.com/${expert.image}`:'image'}
             alt="profile"
             className="w-14 h-14 rounded-full mr-4 flex-shrink-0"
           />

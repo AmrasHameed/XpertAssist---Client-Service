@@ -83,6 +83,8 @@ const SignUp = () => {
             user: data.name,
             userId: data._id,
             image: data.image,
+            email: data.email,
+            mobile: data.mobile,
             loggedIn: true,
           })
         );

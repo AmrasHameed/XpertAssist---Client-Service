@@ -5,6 +5,9 @@ import '../../Admin/Home/navbar.css';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
+const BUCKET =  import.meta.env.VITE_AWS_S3_BUCKET;
+const REGION =  import.meta.env.VITE_AWS_S3_REGION;
+
 const Navbar = () => {
   const [isChecked, setIsChecked] = useState(false);
   const expert = useSelector(
@@ -67,7 +70,7 @@ const Navbar = () => {
                   <div className="w-full h-full rounded-full overflow-hidden bg-black">
                     <img
                       className="object-cover w-full h-full"
-                      src={expert.image}
+                      src={expert.image?`https://${BUCKET}.s3.${REGION}.amazonaws.com/${expert.image}`:'image'}
                       alt="Expert"
                     />
                   </div>

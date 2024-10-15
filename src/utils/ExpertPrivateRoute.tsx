@@ -1,23 +1,29 @@
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, Outlet } from 'react-router-dom';
 import axiosExpert from '../service/axios/axiosExpert';
 import { useEffect, useState } from 'react';
+import Loading from './Loading';
+import { expertLogout } from '../service/redux/slices/expertAuthSlice';
 
 const ExpertPrivateRoute = () => {
   const { loggedIn, expertId } = useSelector(
     (store: { expert: { loggedIn: boolean; expertId: string } }) => store.expert
   );
-  console.log('ethiiiiiii')
   const [isBlocked, setIsBlocked] = useState<boolean | null>(null);
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchData = async () => {
       if (loggedIn) {
         try {
           const { data } = await axiosExpert().get(`/isBlocked/${expertId}`);
-          console.log(data,'bloopockkkc')
-          setIsBlocked(data.message === 'Blocked');
+          if (data.message === 'Blocked') {
+            dispatch(expertLogout());
+            setIsBlocked(true);
+          } else {
+            setIsBlocked(false);
+          }
         } catch (error) {
           console.error('Error fetching block status', error);
           setIsBlocked(false);
@@ -25,19 +31,22 @@ const ExpertPrivateRoute = () => {
           setLoading(false);
         }
       } else {
-        setLoading(false); 
+        setLoading(false);
       }
     };
-
-    fetchData(); 
+    fetchData();
   }, [loggedIn, expertId]);
+
   if (loading) {
-    return <div>Loading...</div>; 
+    return (
+      <div className="flex flex-row justify-center items-center h-screen">
+        <Loading />
+      </div>
+    );
   }
   if (!loggedIn || isBlocked) {
-    return <Navigate to={'/expert/login'} replace />;
+    return <Navigate to={'/expert'} replace />;
   }
-
   return <Outlet />;
 };
 

@@ -1,8 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
-import axiosUser from '../../../service/axios/axiosUser';
-
 
 type Option =
   | 'My Profile'
@@ -14,36 +11,18 @@ interface ProfileSideBarProps {
   onOptionSelect: (option: Option) => void;
 }
 
+const BUCKET =  import.meta.env.VITE_AWS_S3_BUCKET;
+const REGION =  import.meta.env.VITE_AWS_S3_REGION;
+
 const ProfileSideBar = ({ onOptionSelect }: ProfileSideBarProps) => {
-  const user = useSelector((store: { user: { userId: string } }) => store.user);
+  const {user, email, image} = useSelector((store: { user: { user: string , email: string, image: string} }) => store.user);
 
-  const [image, setImage] = useState<string | null>(null);
-  const [name, setName] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (user?.userId) {
-      fetchUserData();
-    }
-  }, []);
-
-  const fetchUserData = async (): Promise<void> => {
-    try {
-      const { data } = await axiosUser().get(`/getUser/${user?.userId}`);
-      if (data.message === 'success') {
-        setImage(data.userImage);
-        setName(data.name)
-      } else {
-        toast.error('No Users Found');
-      }
-    } catch (error) {
-      toast.error((error as Error).message);
-    }
-  };
   const [selectedOption, setSelectedOption] = useState<Option>('My Profile');
   const handleOptionClick = (option: Option) => {
     setSelectedOption(option);
-    onOptionSelect(option); // Pass the selected option to the parent
-    console.log('Selected:', option); // You can perform actions based on the option here
+    onOptionSelect(option); 
+    console.log('Selected:', option); 
   };
 
   return (
@@ -51,17 +30,17 @@ const ProfileSideBar = ({ onOptionSelect }: ProfileSideBarProps) => {
       <div className="profile-card mb-8">
         <div className="flex items-center mb-4">
           <img
-            src={image}
+            src={image?`https://${BUCKET}.s3.${REGION}.amazonaws.com/${image}`:'image'}
             alt="profile"
             className="w-14 h-14 rounded-full mr-4"
           />
           <div>
-            <p className="font-bold">{name}</p>
+            <p className="font-bold">{user}</p>
+            <p className="font-normal">{email}</p>
           </div>
         </div>
         <div className="border-t border-gray-200 pt-4">
           <ul>
-            {/* My Profile */}
             <li
               className={`flex justify-between py-3 cursor-pointer ${
                 selectedOption === 'My Profile'

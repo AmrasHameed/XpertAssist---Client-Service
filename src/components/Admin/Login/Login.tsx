@@ -5,7 +5,7 @@ import * as Yup from 'yup';
 import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import { LoginFormValues } from '../../../interfaces/interface';
-import { axiosAdmin } from '../../../service/axios/axiosAdmin';
+import {axiosAdmin} from '../../../service/axios/axiosAdmin';
 import { adminLogin } from '../../../service/redux/slices/adminAuthSlice';
 
 const validationSchema = Yup.object({

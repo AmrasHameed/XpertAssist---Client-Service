@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import axiosExpert from '../../../service/axios/axiosExpert';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
@@ -34,6 +34,9 @@ interface ProfileUpdates {
   mobile?: string;
   expertImage?: File | null;
 }
+
+const BUCKET = import.meta.env.VITE_AWS_S3_BUCKET;
+const REGION = import.meta.env.VITE_AWS_S3_REGION;
 
 const ProfileDetails = () => {
   const services = useSelector(
@@ -168,7 +171,8 @@ const ProfileDetails = () => {
     setEditMode(!editMode);
     if (editMode) {
       setSelectedImage(null);
-      setPreviewImage(initialValues.expertImage);
+      setPreviewImage(initialValues.expertImage? `https://${BUCKET}.s3.${REGION}.amazonaws.com/${initialValues.expertImage}`
+        : 'image');
       setInitialValues(initialValues);
     }
   };
@@ -181,11 +185,13 @@ const ProfileDetails = () => {
       setSelectedImage(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPreviewImage(reader.result as string);
+        const imageUrl = reader.result as string;
+        setPreviewImage(imageUrl);
       };
       reader.readAsDataURL(file);
     }
   };
+
 
   const handleVerify = () => {
     setVerify(true);
@@ -230,7 +236,14 @@ const ProfileDetails = () => {
       );
       if (data.message === 'success') {
         setEditMode(false);
-        window.location.reload();
+        dispatch(
+          expertLogin({
+            ...expert,
+            expert: data.name,
+            mobile: data.mobile,
+            image: data.expertImage,
+          })
+        );
         toast.success('Profile updated successfully');
       } else {
         toast.error(data.message);
@@ -387,7 +400,9 @@ const ProfileDetails = () => {
             <div className="flex items-center">
               <div className="relative">
                 <img
-                  src={previewImage || expert.image}
+                  src={
+                    previewImage || `https://${BUCKET}.s3.${REGION}.amazonaws.com/${expert.image}` || 'placeholder-image-url'
+                  }
                   alt="profile"
                   className="w-16 h-16 rounded-full mr-4"
                 />
@@ -438,11 +453,13 @@ const ProfileDetails = () => {
                 </p>
               )}
               {expert.isVerified === 'rejected' && (
-                <div className='flex flex-col items-end'>
+                <div className="flex flex-col items-end">
                   <p className="text-red-500 font-semibold">
                     Verification Rejected
                   </p>
-                  <p className='text-sm text-gray-400'>Check mail for details</p>
+                  <p className="text-sm text-gray-400">
+                    Check mail for details
+                  </p>
                   <div className="text-right m-1">
                     <button
                       className="bg-gray-800 text-white py-1 px-3 rounded hover:bg-black"

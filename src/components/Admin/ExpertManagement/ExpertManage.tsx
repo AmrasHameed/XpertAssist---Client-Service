@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { axiosAdmin } from '../../../service/axios/axiosAdmin';
 import { toast } from 'react-toastify';
-import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Service } from '../../../interfaces/interface';
 
@@ -21,6 +20,9 @@ interface VerificationDetails {
   govIdNumber: string;
   document: string;
 }
+
+const BUCKET =  import.meta.env.VITE_AWS_S3_BUCKET;
+const REGION =  import.meta.env.VITE_AWS_S3_REGION;
 
 const ExpertManage = () => {
   const [experts, setExperts] = useState<Expert[]>([]);
@@ -131,9 +133,9 @@ const ExpertManage = () => {
                       >
                         {expert.expertImage && (
                           <img
-                            src={expert.expertImage}
+                            src={expert.expertImage?`https://${BUCKET}.s3.${REGION}.amazonaws.com/${expert.expertImage}`:'Image'}
                             alt="expert"
-                            className="w-10 h-auto rounded-full border-2 border-black"
+                            className="w-10 h-10 rounded-full border-2 border-black"
                           />
                         )}
                       </td>

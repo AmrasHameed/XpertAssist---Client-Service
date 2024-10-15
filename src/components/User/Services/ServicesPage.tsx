@@ -6,6 +6,10 @@ import { useSelector } from 'react-redux';
 import { Service } from '../../../interfaces/interface';
 
 
+const BUCKET =  import.meta.env.VITE_AWS_S3_BUCKET;
+const REGION =  import.meta.env.VITE_AWS_S3_REGION;
+
+
 
 const ServicesPage = () => {
   const services = useSelector((state: { services: { services: Service[] } }) => state.services.services);
@@ -47,7 +51,7 @@ const ServicesPage = () => {
                   <div className="overflow-hidden rounded-t-lg h-48">
                     <img
                       className="object-cover w-full h-full transition-all duration-300 group-hover:scale-110"
-                      src={service.serviceImage}
+                      src={service.serviceImage?`https://${BUCKET}.s3.${REGION}.amazonaws.com/${service.serviceImage}`:'image'}
                       alt={service.name}
                     />
                   </div>

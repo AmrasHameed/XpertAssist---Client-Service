@@ -13,6 +13,10 @@ type Service = {
   description: string;
 };
 
+const BUCKET =  import.meta.env.VITE_AWS_S3_BUCKET;
+const REGION =  import.meta.env.VITE_AWS_S3_REGION;
+
+
 const ServiceManage = () => {
   const [services, setServices] = useState<Service[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -153,7 +157,8 @@ const ServiceManage = () => {
                         <img
                           className="w-full h-full object-cover"
                           src={
-                            service.serviceImage || 'path-to-placeholder-image'
+                            service.serviceImage ? 
+                            `https://${BUCKET}.s3.${REGION}.amazonaws.com/${service.serviceImage}`:'service-image'
                           }
                           alt="Service"
                         />

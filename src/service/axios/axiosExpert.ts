@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { useDispatch } from "react-redux";
 import { expertLogout } from "../redux/slices/expertAuthSlice";
+import { store } from "../redux/store";
 
 
 const createAxios = (): AxiosInstance => {
@@ -34,9 +35,7 @@ const createAxios = (): AxiosInstance => {
             const refreshToken = localStorage.getItem('expertRefreshToken');
             if(!refreshToken) {
                 localStorage.removeItem('expertToken')
-                const dispatch = useDispatch()
-                dispatch(expertLogout())
-                window.location.href = '/expert/login';
+                store.dispatch(expertLogout())
                 return Promise.reject(error)
             }
             try {

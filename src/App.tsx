@@ -31,6 +31,7 @@ import ExpertPrivateRoute from './utils/ExpertPrivateRoute';
 import UserPrivateRoute from './utils/UserPrivateRoute';
 import UserForgotPass from './pages/user/UserForgotPass';
 import ExpertForgotPassPage from './pages/expert/ExpertForgotPassPage';
+import ServiceAndLocation from './components/User/ServiceRequest/ServiceAndLocation';
 
 function App() {
   const user = useSelector(
@@ -55,6 +56,7 @@ function App() {
           <Route path="" element={<UserPrivateRoute />}>
             <Route path="/" element={<HomePage />} />
             <Route path="/profile" element={<UserProfile />} />
+            <Route path="/request-service" element={<ServiceAndLocation />} />
           </Route>
 
 

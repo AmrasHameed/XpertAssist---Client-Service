@@ -1,26 +1,73 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { expertLogout } from '../../../service/redux/slices/expertAuthSlice';
+import { expertLogout, expertOffline, expertOnline } from '../../../service/redux/slices/expertAuthSlice';
 import '../../Admin/Home/navbar.css';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import axiosExpert from '../../../service/axios/axiosExpert';
+import { setServices } from '../../../service/redux/slices/serviceSlice';
 
-const BUCKET =  import.meta.env.VITE_AWS_S3_BUCKET;
-const REGION =  import.meta.env.VITE_AWS_S3_REGION;
+const BUCKET = import.meta.env.VITE_AWS_S3_BUCKET;
+const REGION = import.meta.env.VITE_AWS_S3_REGION;
 
 const Navbar = () => {
-  const [isChecked, setIsChecked] = useState(false);
+  const dispatch = useDispatch();
   const expert = useSelector(
     (store: {
       expert: {
+        expertId: string;
         image?: string;
+        online?:boolean;
       };
     }) => store.expert
   );
-  const handleToggle = () => {
-    setIsChecked(!isChecked);
+
+  
+  
+  const handleToggle = async () => {
+    if(expert.online) {
+      try{
+        const { data } = await axiosExpert().post(`/setOffline/${expert.expertId}`); 
+        if(data.message === 'success') {
+          toast.error('You are Offline')
+          dispatch(expertOffline())
+        } else {
+          toast.error(data.message)
+        }
+      } catch (error) {
+        toast.error((error as Error).message);
+      }
+    } else {
+      try {
+        const { data } = await axiosExpert().post(`/setOnline/${expert.expertId}`);
+        if(data.message === 'success') {
+          toast.success('Yayy!!! You are Online')
+          dispatch(expertOnline());
+        } else {
+          toast.error(data.message)
+        }
+      } catch (error) {
+        toast.error((error as Error).message);
+      }
+    }
   };
-  const dispatch = useDispatch();
+  useEffect(() => {
+    fetchServiceData();
+  }, []);
+
+  const fetchServiceData = async () => {
+    try {
+      const { data } = await axiosExpert().get('/getServices');
+      if (data) {
+        dispatch(setServices(data));
+      } else {
+        toast.error('No Services Found');
+      }
+    } catch (error) {
+      toast.error((error as Error).message);
+    }
+  };
+  
   return (
     <nav className="bg-white p-4 flex justify-between items-center shadow-2xl">
       <div className="flex w-56 h-12 justify-center rounded-full relative overflow-hidden bg-black text-white p-1 items-center">
@@ -34,12 +81,12 @@ const Navbar = () => {
             <input
               type="checkbox"
               className="sr-only peer"
-              checked={isChecked}
+              checked={expert.online}
               onChange={handleToggle}
             />
             <div className="group peer ring-0 bg-red-500 rounded-full outline-none duration-300 after:duration-300 w-[79px] h-8 shadow-md peer-checked:bg-green-500 peer-focus:outline-none after:content-['❌'] after:rounded-full after:absolute after:bg-gray-50 after:outline-none after:h-6 after:w-6 after:top-1 after:left-1 after:-rotate-180 after:flex after:justify-center after:items-center peer-checked:after:translate-x-12 peer-checked:after:content-['✔️'] peer-hover:after:scale-95 peer-checked:after:rotate-0"></div>
           </label>
-          <p className="ml-4">{isChecked ? 'Online' : 'Offline'}</p>
+          <p className="ml-4">{expert.online ? 'Online' : 'Offline'}</p>
         </div>
       </div>
 
@@ -70,7 +117,11 @@ const Navbar = () => {
                   <div className="w-full h-full rounded-full overflow-hidden bg-black">
                     <img
                       className="object-cover w-full h-full"
-                      src={expert.image?`https://${BUCKET}.s3.${REGION}.amazonaws.com/${expert.image}`:'image'}
+                      src={
+                        expert.image
+                          ? `https://${BUCKET}.s3.${REGION}.amazonaws.com/${expert.image}`
+                          : 'image'
+                      }
                       alt="Expert"
                     />
                   </div>

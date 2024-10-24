@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { useDispatch } from "react-redux";
 import { userLogout } from "../redux/slices/userAuthSlice";
+import { store } from "../redux/store";
 
 
 const createAxios = (): AxiosInstance => {
@@ -34,9 +35,7 @@ const createAxios = (): AxiosInstance => {
             const refreshToken = localStorage.getItem('refreshToken');
             if(!refreshToken) {
                 localStorage.removeItem('userToken')
-                const dispatch = useDispatch()
-                dispatch(userLogout())
-                window.location.href = '/login';
+                store.dispatch(userLogout())
                 return Promise.reject(error)
             }
             try {

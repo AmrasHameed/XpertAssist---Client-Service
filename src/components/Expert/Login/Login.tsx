@@ -41,7 +41,6 @@ const Login = () => {
     try {
       const { data } = await axiosExpert().post('/loginExpert', values);
       if (data.message === 'Success') {
-        console.log(data, 'logindata');
         localStorage.setItem('expertToken', data.token);
         localStorage.setItem('expertRefreshToken', data.refreshToken);
         dispatch(

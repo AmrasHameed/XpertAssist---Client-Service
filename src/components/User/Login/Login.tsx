@@ -41,7 +41,6 @@ const Login = () => {
     try {
       const { data } = await axiosUser().post('/loginUser', values);
       if (data.message === 'Success') {
-        console.log(data, 'logindata');
         localStorage.setItem('userToken', data.token);
         localStorage.setItem('refreshToken', data.refreshToken);
         dispatch(

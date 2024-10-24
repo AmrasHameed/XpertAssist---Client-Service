@@ -11,8 +11,8 @@ const BUCKET =  import.meta.env.VITE_AWS_S3_BUCKET;
 const REGION =  import.meta.env.VITE_AWS_S3_REGION;
 
 const Navbar = ({ activePage }: NavbarProps) => {
-  const {image, user} = useSelector((store: { user: {user: string, image: string, userId: string } }) => store.user);
   const dispatch = useDispatch();
+  const {image, user} = useSelector((store: { user: {user: string, image: string, userId: string } }) => store.user);
   const isActive = (page: string) => activePage === page;
   return (
     <nav className="bg-black text-white py-6 ">

@@ -2,7 +2,7 @@ import Dashboard from "./Dashboard";
 import Earnings from "../Earnings/Earnings";
 import Help from "../Help/Help";
 import PrevServices from "../PreviousServices/PrevServices";
-import Profile from "../pages/Profile";
+import ProfilePage from "../Profile/ProfilePage";
 
 
 
@@ -12,7 +12,7 @@ const Main = ({ selectedOption }: { selectedOption: string }) => {
       {selectedOption === "Dashboard" && <Dashboard />}
       {selectedOption === "Previous Services" && <PrevServices />}
       {selectedOption === "Earnings" && <Earnings />}
-      {selectedOption === "Profile" && <Profile />}
+      {selectedOption === "Profile" && <ProfilePage />}
       {selectedOption === "Help" && <Help />}
     </div>
   );

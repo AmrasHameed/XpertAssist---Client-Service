@@ -5,10 +5,10 @@ import 'swiper/css/pagination';
 import { Autoplay, Navigation, Pagination } from 'swiper/modules';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import axiosUser from '../../../service/axios/axiosUser';
 import { toast } from 'react-toastify';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setServices } from '../../../service/redux/slices/serviceSlice';
 import { Service } from '../../../interfaces/interface';
 
@@ -17,7 +17,7 @@ const BUCKET =  import.meta.env.VITE_AWS_S3_BUCKET;
 const REGION =  import.meta.env.VITE_AWS_S3_REGION;
 
 const Services = () => {
-  const [service, setService] = useState<Service[]>([]);
+  const services = useSelector((state: { services: { services: Service[] } }) => state.services.services);
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -28,7 +28,6 @@ const Services = () => {
     try {
       const { data } = await axiosUser().get('/getServices');
       if (data) {
-        setService(data);
         dispatch(setServices(data))
       } else {
         toast.error('No Services Found');
@@ -67,7 +66,7 @@ const Services = () => {
           }}
           className="mySwiper"
         >
-          {service.map((service, index) => (
+          {services.map((service, index) => (
             <SwiperSlide key={index}>
               <div className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col border-2 transition-shadow duration-200 ease-in hover:scale-95 hover:shadow-none h-[400px]">
                 <img

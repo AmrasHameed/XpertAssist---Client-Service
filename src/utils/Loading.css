@@ -47,11 +47,11 @@
   width: 0%;
   height: var(--height);
   overflow: hidden;
-  background: rgb(222, 74, 15);
+  background: rgb(1, 1, 1);
   background: linear-gradient(
     0deg,
-    rgba(222, 74, 15, 1) 0%,
-    rgba(249, 199, 79, 1) 100%
+    rgb(0, 237, 250) 0%,
+    rgb(0, 255, 229) 100%
   );
   border-radius: calc(var(--height) / 2);
   animation: loading 1s ease-out infinite;

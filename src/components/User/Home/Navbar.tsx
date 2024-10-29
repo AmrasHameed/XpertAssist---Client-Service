@@ -47,7 +47,7 @@ const Navbar = ({ activePage }: NavbarProps) => {
             </li>
             <li>
               <Link
-                to="/job-status"
+                to="/job"
                 className={`hover:text-shadow-glow ${
                   isActive('job-status') ? 'underline text-cyan-500' : ''
                 }`}

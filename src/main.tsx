@@ -9,18 +9,21 @@ import { persistor, store } from './service/redux/store.ts';
 import { Provider } from 'react-redux';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import ErrorBoundary from './ErrorBoundary.tsx';
+import { SocketProvider } from './SocketContext.tsx';
 
 const GOOGLE_CLIENT = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 createRoot(document.getElementById('root')!).render(
   <ErrorBoundary>
-    <Provider store={store}>
-      <GoogleOAuthProvider clientId={GOOGLE_CLIENT}>
-        <PersistGate loading={<div>Loading...</div>} persistor={persistor}>
-          <App />
-        </PersistGate>
-      </GoogleOAuthProvider>
-      <ToastContainer />
-    </Provider>
+    <SocketProvider>
+      <Provider store={store}>
+        <GoogleOAuthProvider clientId={GOOGLE_CLIENT}>
+          <PersistGate loading={<div>Loading...</div>} persistor={persistor}>
+            <App />
+          </PersistGate>
+        </GoogleOAuthProvider>
+        <ToastContainer />
+      </Provider>
+    </SocketProvider>
   </ErrorBoundary>
 );

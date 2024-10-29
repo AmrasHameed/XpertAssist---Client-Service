@@ -31,7 +31,9 @@ import ExpertPrivateRoute from './utils/ExpertPrivateRoute';
 import UserPrivateRoute from './utils/UserPrivateRoute';
 import UserForgotPass from './pages/user/UserForgotPass';
 import ExpertForgotPassPage from './pages/expert/ExpertForgotPassPage';
-import ServiceAndLocation from './components/User/ServiceRequest/ServiceAndLocation';
+import CurrentJobPage from './pages/user/CurrentJobPage';
+import ServiceAndLocationPage from './pages/user/ServiceAndLocationPage';
+import ExpertCurrentJobPage from './pages/expert/ExpertCurrentJobPage';
 
 function App() {
   const user = useSelector(
@@ -56,7 +58,8 @@ function App() {
           <Route path="" element={<UserPrivateRoute />}>
             <Route path="/" element={<HomePage />} />
             <Route path="/profile" element={<UserProfile />} />
-            <Route path="/request-service" element={<ServiceAndLocation />} />
+            <Route path="/request-service" element={<ServiceAndLocationPage />} />
+            <Route path ="/job" element={<CurrentJobPage />} />
           </Route>
 
 
@@ -69,6 +72,7 @@ function App() {
             <Route path="/expert/previous-services" element={<ExpertPrevService />} />
             <Route path="/expert/earnings" element={<ExpertEarning />} />
             <Route path="/expert/help" element={<ExpertHelpPage />} />
+            <Route path="/expert/job" element={<ExpertCurrentJobPage />} />
           </Route>
 
           <Route path="/admin" element={admin ? <Navigate to={'/admin/dashboard'} /> : <AdminLoginPage />}/>

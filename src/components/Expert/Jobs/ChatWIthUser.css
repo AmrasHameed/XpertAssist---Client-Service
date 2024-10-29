@@ -1,0 +1,33 @@
+.user-message {
+    position: relative;
+}
+
+.user-message::before {
+    content: '';
+    position: absolute;
+    top: 10%; 
+    right: -3px; 
+    transform: translateY(-50%) rotate(90deg); 
+    width: 0;
+    height: 0;
+    border-left: 8px solid #dbeafe;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+}
+
+.other-message {
+    position: relative;
+}
+
+.other-message::before {
+    content: '';
+    position: absolute;
+    top: 10%; 
+    left: -3px; 
+    transform: translateY(-50%) rotate(270deg);
+    width: 0;
+    height: 0;
+    border-right: 8px solid #dcfce7;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+}

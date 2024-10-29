@@ -61,7 +61,7 @@ const Services = () => {
           autoplay={{ delay: 3000 }}
           loop={true}
           navigation={{
-            nextEl: '.custom-next-button', // Custom buttons
+            nextEl: '.custom-next-button', 
             prevEl: '.custom-prev-button',
           }}
           className="mySwiper"

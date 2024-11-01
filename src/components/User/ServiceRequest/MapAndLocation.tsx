@@ -15,7 +15,7 @@ import {
 } from '../../../service/redux/slices/expertSearch';
 import { AppDispatch, RootState } from '../../../service/redux/store';
 import ExpertSearching from './ExpertSearching';
-import { useSocket } from '../../../SocketContext';
+import { useSocket } from '../../../Context/SocketContext';
 import { toast } from 'react-toastify';
 
 const AUTOCOMPLETE_API_URL = import.meta.env.VITE_AUTOCOMPLETE_API_URL;
@@ -36,7 +36,7 @@ const MapAndLocation = () => {
   const { userId } = useSelector(
     (store: { user: { userId: string } }) => store.user
   );
-  const socket = useSocket()
+  const socket = useSocket();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [olaMap, setOlaMap] = useState<OlaMaps | null>(null);
   const [coordinates, setCoordinates] = useState<Coordinates>({
@@ -69,7 +69,7 @@ const MapAndLocation = () => {
   };
 
   useEffect(() => {
-    if(socket) {
+    if (socket) {
       socket.on('newTokens', (data) => {
         const { token, refreshToken } = data;
         localStorage.setItem('userToken', token);
@@ -83,10 +83,9 @@ const MapAndLocation = () => {
           dispatch(endSearching());
         }
       });
-      socket.on('no-experts-available',(data) => {
-        console.log(data,'messageee')
-        toast.error(data.message)
-      })
+      socket.on('no-experts-available', (data) => {
+        toast.error(data.message);
+      });
     }
     return () => {
       socket?.off('newTokens');
@@ -339,6 +338,7 @@ const MapAndLocation = () => {
     if (startSearch) {
       const timer = setTimeout(() => {
         dispatch(endSearching());
+        setTriggerMap(true);
       }, 20000);
       return () => clearTimeout(timer);
     }
@@ -396,6 +396,7 @@ const MapAndLocation = () => {
                   />
                   <span className="absolute inset-y-0 right-0.5 flex items-center group">
                     <button
+                      type="button"
                       onClick={handleCurrentLocation}
                       className="py-[0.40rem] px-[0.60rem] rounded-lg border-2 bg-gray-200 transition-colors duration-200 cursor-pointer"
                     >

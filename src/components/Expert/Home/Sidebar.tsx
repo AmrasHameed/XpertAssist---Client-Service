@@ -9,6 +9,7 @@ interface SidebarProps {
 const Sidebar= ({ selectedOption, setSelectedOption }:SidebarProps) => {
   const options = [
     { name: "Dashboard", icon: "dashboard", path:'/expert'},
+    { name: "Job Status", icon: "work_history", path:'/expert/job' },
     { name: "Previous Services", icon: "undo", path:'/expert/previous-services' },
     { name: "Earnings", icon: "paid", path:'/expert/earnings' },
     { name: "Profile", icon: "account_circle", path:'/expert/profile' },

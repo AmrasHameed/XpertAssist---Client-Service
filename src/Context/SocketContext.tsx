@@ -1,6 +1,6 @@
 // SocketContext.tsx
 import { createContext, useContext, useEffect, useMemo, ReactNode } from 'react';
-import { connectSocket, disconnectSocket } from './socketUtils'; 
+import { connectSocket, disconnectSocket } from '../socketUtils'; 
 import { Socket } from 'socket.io-client';
 
 interface SocketContextType {

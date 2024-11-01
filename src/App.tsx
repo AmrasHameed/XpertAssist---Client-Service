@@ -34,6 +34,9 @@ import ExpertForgotPassPage from './pages/expert/ExpertForgotPassPage';
 import CurrentJobPage from './pages/user/CurrentJobPage';
 import ServiceAndLocationPage from './pages/user/ServiceAndLocationPage';
 import ExpertCurrentJobPage from './pages/expert/ExpertCurrentJobPage';
+import { Service } from './interfaces/interface';
+import ServiceRequestModal from './components/Expert/Home/ServiceRequestModal';
+import { RootState } from './service/redux/store';
 
 function App() {
   const user = useSelector(
@@ -45,6 +48,11 @@ function App() {
   const expert = useSelector(
     (store: { expert: { loggedIn: boolean } }) => store.expert.loggedIn
   );
+  const services = useSelector(
+    (state: { services: { services: Service[] } }) => state.services.services
+  );
+  const { expertId } = useSelector((state: RootState) => state.expert);
+
 
   return (
     <>
@@ -63,16 +71,16 @@ function App() {
           </Route>
 
 
-          <Route path="/expert" element={expert ? <ExpertHomePage /> : <ExpertLogin />}/>
-          <Route path="/expert/signup" element={expert ? <ExpertHomePage /> : <ExpertSignup />}/>
-          <Route path="/expert/forgot-password" element={expert ? <ExpertHomePage /> : <ExpertForgotPassPage />}/>
+          <Route path="/expert" element={expert ? <><ExpertHomePage /><ServiceRequestModal expertId={expertId} services={services}/></>: <ExpertLogin />}/>
+          <Route path="/expert/signup" element={expert ? <><ExpertHomePage /><ServiceRequestModal expertId={expertId} services={services}/></> : <ExpertSignup />}/>
+          <Route path="/expert/forgot-password" element={expert ? <><ExpertHomePage /><ServiceRequestModal expertId={expertId} services={services}/></> : <ExpertForgotPassPage />}/>
           <Route path="" element={<ExpertPrivateRoute />}>
-            <Route path="/expert" element={<ExpertHomePage />} />
-            <Route path="/expert/profile" element={<ExpertProfile />} />
-            <Route path="/expert/previous-services" element={<ExpertPrevService />} />
-            <Route path="/expert/earnings" element={<ExpertEarning />} />
-            <Route path="/expert/help" element={<ExpertHelpPage />} />
-            <Route path="/expert/job" element={<ExpertCurrentJobPage />} />
+            <Route path="/expert" element={<><ExpertHomePage /><ServiceRequestModal expertId={expertId} services={services}/></>} />
+            <Route path="/expert/profile" element={<><ExpertProfile /><ServiceRequestModal expertId={expertId} services={services}/></>} />
+            <Route path="/expert/previous-services" element={<><ExpertPrevService /><ServiceRequestModal expertId={expertId} services={services}/></>} />
+            <Route path="/expert/earnings" element={<><ExpertEarning /><ServiceRequestModal expertId={expertId} services={services}/></>} />
+            <Route path="/expert/help" element={<><ExpertHelpPage /><ServiceRequestModal expertId={expertId} services={services}/></>} />
+            <Route path="/expert/job" element={<><ExpertCurrentJobPage /><ServiceRequestModal expertId={expertId} services={services}/></>} />
           </Route>
 
           <Route path="/admin" element={admin ? <Navigate to={'/admin/dashboard'} /> : <AdminLoginPage />}/>

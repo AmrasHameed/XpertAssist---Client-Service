@@ -19,23 +19,6 @@ const ChatWithExpert: React.FC<ChatWithExpertProps> = ({ socket }) => {
   const [input, setInput] = useState('');
   const jobId = localStorage.getItem('currentJob-user');
   const dispatch = useDispatch()
-  useEffect(() => {
-    if (socket) {
-      socket.on('newTokens', (data) => {
-        const { token, refreshToken } = data;
-        localStorage.setItem('userToken', token);
-        localStorage.setItem('refreshToken', refreshToken);
-      });
-      socket.emit('join_chat', jobId);
-      socket.on('receive-user-message', (data) => {
-        dispatch(addMessage(data.message));
-      });
-    }
-    return () => {
-      socket?.off('newTokens');
-      socket?.off('recieve-expert-message');
-    };
-  }, [dispatch, jobId, socket]);
 
   const handleSendMessage = () => {
     if (!input.trim()) return;
@@ -54,7 +37,7 @@ const ChatWithExpert: React.FC<ChatWithExpertProps> = ({ socket }) => {
   return (
     <div className="p-4 bg-indigo-100 rounded-lg h-96 flex flex-col">
       <h3 className="text-xl font-semibold mb-4">Chat with Expert</h3>
-      <div className="flex-1 overflow-y-auto p-2 bg-white rounded-lg shadow-inner">
+      <div  style={{ backgroundImage: 'url("/chatbg.jpg")', backgroundSize: '50%' }}  className="flex-1 overflow-y-auto p-2 bg-white rounded-lg shadow-inner">
         {messages.map((message, index) => (
           <div
             key={index}

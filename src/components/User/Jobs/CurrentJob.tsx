@@ -4,9 +4,12 @@ import Footer from '../Home/Footer';
 import Navbar from '../Home/Navbar';
 import { toast } from 'react-toastify';
 import { Service } from '../../../interfaces/interface';
-import { useSelector } from 'react-redux';
-import { useSocket } from '../../../SocketContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { useSocket } from '../../../Context/SocketContext';
 import ChatWithExpert from './ChatWithExpert';
+import Loading from '../../../utils/Loading';
+import { addMessage } from '../../../service/redux/slices/messageSlice';
+import { useWebRTC } from '../../../Context/WebRtcContext';
 
 const BUCKET = import.meta.env.VITE_AWS_S3_BUCKET;
 const REGION = import.meta.env.VITE_AWS_S3_REGION;
@@ -37,13 +40,23 @@ const CurrentJob: React.FC = () => {
   const [expertData, setExpertData] = useState<ExpertData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<'details' | 'chat'>('details');
-  const socket = useSocket();
+  const { startCall } = useWebRTC();
 
+  const socket = useSocket();
+  const dispatch = useDispatch();
+
+  const userId = useSelector(
+    (state: { user: { userId: string } }) => state.user.userId
+  );
   const services = useSelector(
     (state: { services: { services: Service[] } }) => state.services.services
   );
 
   useEffect(() => {
+    const handleUserMessage = (data) => {
+      dispatch(addMessage(data.message));
+    };
+    const jobId = localStorage.getItem('currentJob-user');
     if (socket) {
       socket.on('newTokens', (data) => {
         const { token, refreshToken } = data;
@@ -61,27 +74,32 @@ const CurrentJob: React.FC = () => {
           });
         }
       });
+      socket.emit('join_chat', jobId);
+      socket.emit('join_call', userId);
+      socket.on('receive-user-message', handleUserMessage);
     }
     return () => {
       socket?.off('newTokens');
       socket?.off('start-job');
+      socket?.off('receive-user-message', handleUserMessage);
     };
-  }, [jobData, socket]);
+  }, [dispatch, jobData, socket, userId]);
 
   useEffect(() => {
     const jobId = localStorage.getItem('currentJob-user');
     const fetchData = async () => {
       try {
         const { data } = await axiosUser().get<JobData>(`/jobdata/${jobId}`);
-        console.log(data);
         if (data) {
           const serviceDetails = services.find(
             (service) => service._id === data.service
           );
           const serviceName = serviceDetails ? serviceDetails.name : '';
+          localStorage.setItem('userId-job', data?.userId)
           setJobData({ ...data, serviceName });
-
+          
           if (data.expertId) {
+            localStorage.setItem('expertId-job', data?.expertId)
             const expertResponse = await axiosUser().get<ExpertData>(
               `/getexpert/${data.expertId}`
             );
@@ -95,11 +113,27 @@ const CurrentJob: React.FC = () => {
         setLoading(false);
       }
     };
-
-    fetchData();
+    if (jobId) {
+      fetchData();
+    }
   }, [services]);
 
-  if (loading) return <div>Loading...</div>;
+  const startVideoCall =() => {
+    const participantToCall = 'expert'
+    if (participantToCall) {
+      startCall(participantToCall);
+    } else {
+      console.error("No participants available to call");
+    }
+  }
+  
+
+  if (loading)
+    return (
+      <div className="w-screen min-h-screen flex items-center justify-center">
+        <Loading />
+      </div>
+    );
 
   return (
     <div>
@@ -113,25 +147,40 @@ const CurrentJob: React.FC = () => {
               </h3>
 
               <div className="flex justify-between items-start mb-4">
-                <div className="flex items-center">
-                  <img
-                    src={`https://${BUCKET}.s3.${REGION}.amazonaws.com/${expertData?.expertImage}`}
-                    alt="Expert"
-                    className="w-28 h-28 rounded-full object-cover mr-4 border-2 border-indigo-500"
-                  />
-                  <div className="space-y-1">
-                    <p className="text-gray-800 text-lg font-semibold flex items-center">
-                      Name: {expertData?.name}
-                      {expertData?.isVerified && (
-                        <span className="material-symbols-outlined font-extrabold p-1 text-green-500 ml-1">
-                          check_circle
-                        </span>
-                      )}
-                    </p>
-                    <p className="text-gray-700">Email: {expertData?.email}</p>
-                    <p className="text-gray-700">
-                      Mobile: {expertData?.mobile}
-                    </p>
+                <div className="flex flex-col items-start space-x-32">
+                  <div className="flex items-center">
+                    <img
+                      src={`https://${BUCKET}.s3.${REGION}.amazonaws.com/${expertData?.expertImage}`}
+                      alt="Expert"
+                      className="w-28 h-28 rounded-full object-cover mr-4 border-2 border-indigo-500"
+                    />
+                    <div className="space-y-1">
+                      <p className="text-gray-800 text-lg font-semibold flex items-center">
+                        Name: {expertData?.name}
+                        {expertData?.isVerified && (
+                          <span className="material-symbols-outlined font-extrabold p-1 text-green-500 ml-1">
+                            check_circle
+                          </span>
+                        )}
+                      </p>
+                      <p className="text-gray-700">
+                        Email: {expertData?.email}
+                      </p>
+                      <p className="text-gray-700">
+                        Mobile: {expertData?.mobile}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="-mt-1">
+                    <button
+                      onClick={startVideoCall}
+                      className="text-white bg-indigo-500 hover:border-2 hover:border-indigo-500 hover:bg-white hover:text-indigo-500 px-4 py-2 rounded-lg flex items-center justify-center"
+                    >
+                      <span className="material-symbols-outlined mr-2">
+                        video_call
+                      </span>
+                      Video Call
+                    </button>
                   </div>
                 </div>
 

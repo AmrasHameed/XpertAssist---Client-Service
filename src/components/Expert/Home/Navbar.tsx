@@ -1,11 +1,9 @@
-import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { expertLogout, expertOffline, expertOnline } from '../../../service/redux/slices/expertAuthSlice';
 import '../../Admin/Home/navbar.css';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axiosExpert from '../../../service/axios/axiosExpert';
-import { setServices } from '../../../service/redux/slices/serviceSlice';
 
 const BUCKET = import.meta.env.VITE_AWS_S3_BUCKET;
 const REGION = import.meta.env.VITE_AWS_S3_REGION;
@@ -49,22 +47,6 @@ const Navbar = () => {
       } catch (error) {
         toast.error((error as Error).message);
       }
-    }
-  };
-  useEffect(() => {
-    fetchServiceData();
-  }, []);
-
-  const fetchServiceData = async () => {
-    try {
-      const { data } = await axiosExpert().get('/getServices');
-      if (data) {
-        dispatch(setServices(data));
-      } else {
-        toast.error('No Services Found');
-      }
-    } catch (error) {
-      toast.error((error as Error).message);
     }
   };
   

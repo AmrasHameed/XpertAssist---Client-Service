@@ -1,14 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import axiosExpert from '../../../service/axios/axiosExpert';
 import Navbar from '../Home/Navbar';
 import { toast } from 'react-toastify';
 import { Service } from '../../../interfaces/interface';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Sidebar from '../Home/Sidebar';
-import { getSocket } from '../../../socketUtils';
 import JobDetails from './JobDetails';
 import ChatWithUser from './ChatWithUser';
-import { useSocket } from '../../../SocketContext';
+import { useSocket } from '../../../Context/SocketContext';
+import { addMessage } from '../../../service/redux/slices/messageSlice';
+import Loading from '../../../utils/Loading';
+import { useWebRTC } from '../../../Context/WebRtcContext';
 
 const BUCKET: string | undefined = import.meta.env.VITE_AWS_S3_BUCKET;
 const REGION: string | undefined = import.meta.env.VITE_AWS_S3_REGION;
@@ -38,21 +40,28 @@ interface UserData {
 
 const CurrentJobExpert = () => {
   const [jobData, setJobData] = useState<JobData | null>(null);
-  const [selectedOption, setSelectedOption] = useState<string>('Dashboard');
+  const [selectedOption, setSelectedOption] = useState<string>('Job Status');
   const [userData, setUserData] = useState<UserData | null>(null);
   const [pinInput, setPinInput] = useState<string[]>(['', '', '', '']);
   const [activeTab, setActiveTab] = useState<'details' | 'chat'>('details');
+  const [loading, setLoading] = useState<boolean>(true);
   const socket = useSocket();
+  const { startCall } = useWebRTC();
+  const dispatch = useDispatch();
 
+  const expertId = useSelector(
+    (state: { expert: { expertId: string } }) => state.expert.expertId
+  );
   const services = useSelector(
     (state: { services: { services: Service[] } }) => state.services.services
   );
 
   useEffect(() => {
+    const jobId = localStorage.getItem('currentJob-user');
     socket?.on('newTokens', (data) => {
       const { token, refreshToken } = data;
-      localStorage.setItem('userToken', token);
-      localStorage.setItem('refreshToken', refreshToken);
+      localStorage.setItem('expertToken', token);
+      localStorage.setItem('expertRefreshToken', refreshToken);
     });
     socket?.on('start-job', (expertId, userId) => {
       if (jobData && expertId === jobData.expertId) {
@@ -65,16 +74,23 @@ const CurrentJobExpert = () => {
         });
       }
     });
+    socket?.emit('join_chat', jobId);
+    socket?.emit('join_call', expertId);
+    socket?.on('receive-expert-message', (data) => {
+      dispatch(addMessage(data.message));
+    });
     return () => {
       socket?.off('newTokens');
       socket?.off('start-job');
+      socket?.off('receive-expert-message');
     };
-  }, [socket, jobData]);
+  }, [socket, jobData, dispatch, expertId]);
 
   useEffect(() => {
-    const jobId = localStorage.getItem('currentJob-user');
+    const jobId = localStorage.getItem('currentJob-expert');
     const fetchData = async () => {
       try {
+        setLoading(true);
         const jobPromise = axiosExpert().get(`/jobdata/${jobId}`);
         const userPromise = jobData?.userId
           ? axiosExpert().get(`/getUser/${jobData.userId}`)
@@ -85,7 +101,8 @@ const CurrentJobExpert = () => {
           userPromise,
         ]);
         const data = jobResponse.data;
-
+        localStorage.setItem('userId-job', data?.userId);
+        localStorage.setItem('expertId-job', data?.expertId);
         const serviceDetails = services.find(
           (service) => service._id === data.service
         );
@@ -98,10 +115,13 @@ const CurrentJobExpert = () => {
       } catch (error) {
         console.log(error);
         toast.error((error as Error).message);
+      } finally {
+        setLoading(false);
       }
     };
-
-    fetchData();
+    if (jobId) {
+      fetchData();
+    }
   }, [jobData?.userId, services]);
 
   const handleChange = (value: string, index: number) => {
@@ -128,6 +148,22 @@ const CurrentJobExpert = () => {
     }
   };
 
+  const startVideoCall =() => {
+    const participantToCall = 'user'
+    if (participantToCall) {
+      startCall(participantToCall);
+    } else {
+      console.error("No participants available to call");
+    }
+  }
+
+  if (loading)
+    return (
+      <div className="w-screen min-h-screen flex items-center justify-center">
+        <Loading />
+      </div>
+    );
+
   return (
     <div className="flex min-h-screen">
       <Sidebar
@@ -137,7 +173,7 @@ const CurrentJobExpert = () => {
       <div className="flex-grow flex flex-col">
         <Navbar />
         <div className="flex-grow p-6 bg-gray-100">
-          {jobData ? (
+          {jobData && userData ? (
             <>
               {/* Modal */}
               <div className="flex justify-center items-center relative z-30 h-full">
@@ -147,27 +183,40 @@ const CurrentJobExpert = () => {
                   </h3>
 
                   <div className="flex justify-between items-start mb-4">
-                    <div className="flex items-center">
-                      <img
-                        src={`https://${BUCKET}.s3.${REGION}.amazonaws.com/${userData?.userImage}`}
-                        alt="Expert"
-                        className="w-28 h-28 rounded-full object-cover mr-4 border-2 border-indigo-500"
-                      />
-                      <div className="space-y-1">
-                        <p className="text-gray-800 text-lg font-semibold flex items-center">
-                          Name: {userData?.name}
-                          {userData?.isVerified && (
-                            <span className="material-symbols-outlined font-extrabold p-1 text-green-500 ml-1">
-                              check_circle
-                            </span>
-                          )}
-                        </p>
-                        <p className="text-gray-700">
-                          Email: {userData?.email}
-                        </p>
-                        <p className="text-gray-700">
-                          Mobile: {userData?.mobile}
-                        </p>
+                    <div className="flex flex-col items-start space-x-32">
+                      <div className="flex items-center">
+                        <img
+                          src={`https://${BUCKET}.s3.${REGION}.amazonaws.com/${userData?.userImage}`}
+                          alt="Expert"
+                          className="w-28 h-28 rounded-full object-cover mr-4 border-2 border-indigo-500"
+                        />
+                        <div className="space-y-1">
+                          <p className="text-gray-800 text-lg font-semibold flex items-center">
+                            Name: {userData?.name}
+                            {userData?.isVerified && (
+                              <span className="material-symbols-outlined font-extrabold p-1 text-green-500 ml-1">
+                                check_circle
+                              </span>
+                            )}
+                          </p>
+                          <p className="text-gray-700">
+                            Email: {userData?.email}
+                          </p>
+                          <p className="text-gray-700">
+                            Mobile: {userData?.mobile}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="-mt-1">
+                        <button
+                          onClick={startVideoCall}
+                          className="text-white bg-indigo-500 hover:border-2 hover:border-indigo-500 hover:bg-white hover:text-indigo-500 px-4 py-2 rounded-lg flex items-center justify-center"
+                        >
+                          <span className="material-symbols-outlined mr-2">
+                            video_call
+                          </span>
+                          Video Call
+                        </button>
                       </div>
                     </div>
 
@@ -239,7 +288,7 @@ const CurrentJobExpert = () => {
             </>
           ) : (
             <div className="text-center py-4">
-              No current expert details available.
+              No Current Job details available.
             </div>
           )}
         </div>

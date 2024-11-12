@@ -90,6 +90,7 @@ const ServiceRequestModal = ({
         if (expertId === data.expertId) {
           localStorage.setItem('currentJob-expert', data.jobId);
           navigate('/expert/job');
+          window.location.reload()
           socket.emit('user-confirmation', data.jobId);
         }
       });
@@ -215,7 +216,7 @@ const ServiceRequestModal = ({
                 {/* Price Display */}
                 <div className="flex flex-col items-end">
                   <div className="text-4xl font-bold text-gray-800 pr-5">
-                    ₹{totalAmount?.toFixed(2)}
+                  ₹ {((totalAmount || 0) - (totalAmount || 0) * 0.10).toFixed(2)}
                   </div>
                   <p className="text-[0.775rem] text-black text-center mt-2">
                     *Additional amount for <br />

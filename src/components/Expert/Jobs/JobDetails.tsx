@@ -28,16 +28,21 @@ interface JobDetailsProps {
 const JobDetails: React.FC<JobDetailsProps> = ({ jobData }) => {
   const [map, setMap] = useState<any>(null);
   const [, setDirections] = useState<any>(null);
-  const [, setMarker] = useState<{ userMarker: any; expertMarker: any } | null>(null);
+  const [, setMarker] = useState<{ userMarker: any; expertMarker: any } | null>(
+    null
+  );
 
   useEffect(() => {
     if (jobData?.expertLocation && jobData?.userLocation && !map) {
+      const mapContainer = document.getElementById('map');
+      if (!mapContainer) return;
       const olaMapsInstance = new OlaMaps({
         apiKey: [API_KEY],
       });
 
       const initializedMap = olaMapsInstance.init({
-        style: 'https://api.olamaps.io/tiles/vector/v1/styles/default-light-standard-mr/style.json',
+        style:
+          'https://api.olamaps.io/tiles/vector/v1/styles/default-light-standard-mr/style.json',
         container: 'map',
         center: [
           (jobData.expertLocation.longitude + jobData.userLocation.lng) / 2,
@@ -68,7 +73,10 @@ const JobDetails: React.FC<JobDetailsProps> = ({ jobData }) => {
           offset: [0, 6],
           anchor: 'bottom',
         })
-        .setLngLat([jobData.expertLocation.longitude, jobData.expertLocation.latitude])
+        .setLngLat([
+          jobData.expertLocation.longitude,
+          jobData.expertLocation.latitude,
+        ])
         .setPopup(popup2)
         .addTo(initializedMap);
 
@@ -80,7 +88,8 @@ const JobDetails: React.FC<JobDetailsProps> = ({ jobData }) => {
   useEffect(() => {
     if (map) {
       const fetchDirections = async () => {
-        if (!jobData || !jobData.userLocation || !jobData.expertLocation) return;
+        if (!jobData || !jobData.userLocation || !jobData.expertLocation)
+          return;
 
         const origin = `${jobData.userLocation.lat},${jobData.userLocation.lng}`;
         const destination = `${jobData.expertLocation.latitude},${jobData.expertLocation.longitude}`;
@@ -188,7 +197,7 @@ const JobDetails: React.FC<JobDetailsProps> = ({ jobData }) => {
 
         <div className="flex flex-col items-end">
           <div className="text-4xl font-bold text-gray-800 pr-5">
-            ₹{jobData.totalAmount?.toFixed(2)}
+          ₹ {((jobData.totalAmount || 0) - (jobData.totalAmount || 0) * 0.10).toFixed(2)}
           </div>
           <p className="text-[0.775rem] text-black text-center mt-2">
             *Additional amount for <br />
@@ -199,6 +208,9 @@ const JobDetails: React.FC<JobDetailsProps> = ({ jobData }) => {
           </p>
         </div>
       </div>
+        {jobData.status === 'started' && (
+          <p className='text-center text-red-500 text-sm'>*Press Completed when you complete the task.</p>
+        )}
       {jobData.status === 'pending' && (
         <div className="border-2 h-[500px] w-[713px] rounded-lg m-2">
           <div id="map" className="h-full w-full"></div>

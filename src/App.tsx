@@ -1,7 +1,6 @@
 import {
   BrowserRouter,
   Navigate,
-  Outlet,
   Route,
   Routes,
 } from 'react-router-dom';
@@ -37,6 +36,9 @@ import ExpertCurrentJobPage from './pages/expert/ExpertCurrentJobPage';
 import { Service } from './interfaces/interface';
 import ServiceRequestModal from './components/Expert/Home/ServiceRequestModal';
 import { RootState } from './service/redux/store';
+import JobPaymentPage from './pages/user/JobPaymentPage';
+import PaymentSuccessPage from './pages/user/PaymentSuccessPage';
+import AdminJobsPage from './pages/admin/AdminJobsPage';
 
 function App() {
   const user = useSelector(
@@ -53,7 +55,6 @@ function App() {
   );
   const { expertId } = useSelector((state: RootState) => state.expert);
 
-
   return (
     <>
       <BrowserRouter>
@@ -68,6 +69,7 @@ function App() {
             <Route path="/profile" element={<UserProfile />} />
             <Route path="/request-service" element={<ServiceAndLocationPage />} />
             <Route path ="/job" element={<CurrentJobPage />} />
+            <Route path="/payment" element={<JobPaymentPage />}/>
           </Route>
 
 
@@ -90,6 +92,7 @@ function App() {
           <Route path="/admin/user-management" element={admin ? <AdminUserManage /> : <Navigate to={'/admin'} />}/>
           <Route path="/admin/expert-management" element={admin ? <AdminExpertManage /> : <Navigate to={'/admin'} />}/>
           <Route path="/admin/expert-approval" element={admin ? <AdminExpertApproval /> : <Navigate to={'/admin'} />}/>
+          <Route path='/admin/jobs' element = {admin ? <AdminJobsPage /> : <Navigate to={'/admin'} />} />
           <Route path="/admin/update/:id" element={admin ? <AdminEditService /> : <Navigate to={'/admin'} />}/>
           <Route path="/admin/expert/:id" element={ admin ? <AdminExpertApprove /> : <Navigate to={'/admin'} />}/>
         </Routes>

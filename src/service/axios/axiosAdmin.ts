@@ -60,7 +60,6 @@ export const axiosAdmin = () => {
   // Response interceptor
   axiosInstance.interceptors.response.use(
     (response) => {
-      console.log(response);
       return response;
     },
     (error) => {

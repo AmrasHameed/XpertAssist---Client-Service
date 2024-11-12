@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import { setServices } from '../../../service/redux/slices/serviceSlice';
 import { Service } from '../../../interfaces/interface';
+import { Link } from 'react-router-dom';
 
 
 const BUCKET =  import.meta.env.VITE_AWS_S3_BUCKET;
@@ -80,9 +81,10 @@ const Services = () => {
                   </h3>
                   <p className="mt-3 text-gray-600 flex-1">{service.description}</p>
                   <div className="mt-auto">
-                    <button className="w-full px-3 py-2 border-2 border-cyan-300 text-sky-300 font-semibold rounded hover:bg-cyan-300 hover:text-black transition-colors">
+                    <Link to={`/request-service?serviceId=${service._id}`}> <button className="w-full px-3 py-2 border-2 border-cyan-300 text-sky-300 font-semibold rounded hover:bg-cyan-300 hover:text-black transition-colors">
                       Book now
                     </button>
+                    </Link>
                   </div>
                 </div>
               </div>

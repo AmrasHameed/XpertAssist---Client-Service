@@ -10,6 +10,8 @@ import ChatWithExpert from './ChatWithExpert';
 import Loading from '../../../utils/Loading';
 import { addMessage } from '../../../service/redux/slices/messageSlice';
 import { useWebRTC } from '../../../Context/WebRtcContext';
+import JobTimer from '../../../utils/JobTimer';
+import { useNavigate } from 'react-router-dom';
 
 const BUCKET = import.meta.env.VITE_AWS_S3_BUCKET;
 const REGION = import.meta.env.VITE_AWS_S3_REGION;
@@ -40,6 +42,10 @@ const CurrentJob: React.FC = () => {
   const [expertData, setExpertData] = useState<ExpertData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<'details' | 'chat'>('details');
+  const [isJobActive, setIsJobActive] = useState<boolean>(
+    () => localStorage.getItem('isJobActive') === 'true'
+  );
+  const navigate = useNavigate();
   const { startCall } = useWebRTC();
 
   const socket = useSocket();
@@ -54,6 +60,7 @@ const CurrentJob: React.FC = () => {
 
   useEffect(() => {
     const handleUserMessage = (data) => {
+      console.log(data);
       dispatch(addMessage(data.message));
     };
     const jobId = localStorage.getItem('currentJob-user');
@@ -64,6 +71,8 @@ const CurrentJob: React.FC = () => {
         localStorage.setItem('refreshToken', refreshToken);
       });
       socket.on('start-job', (expertId, userId) => {
+        setIsJobActive(true);
+        localStorage.setItem('isJobActive', 'true');
         if (jobData && userId === jobData.userId) {
           setJobData((prevJobData) => {
             if (!prevJobData) return prevJobData;
@@ -77,16 +86,27 @@ const CurrentJob: React.FC = () => {
       socket.emit('join_chat', jobId);
       socket.emit('join_call', userId);
       socket.on('receive-user-message', handleUserMessage);
+      socket.on('jobCompleted', () => {
+        setIsJobActive(false);
+        localStorage.setItem('isJobActive', 'false');
+        localStorage.setItem('jobStopTime', Date.now().toString());
+        navigate('/payment');
+      });
     }
     return () => {
       socket?.off('newTokens');
       socket?.off('start-job');
+      socket?.off('jobCompleted');
       socket?.off('receive-user-message', handleUserMessage);
     };
-  }, [dispatch, jobData, socket, userId]);
+  }, [dispatch, jobData, navigate, socket, userId]);
 
   useEffect(() => {
     const jobId = localStorage.getItem('currentJob-user');
+    if (!jobId) {
+      setLoading(false);
+      return;
+    }
     const fetchData = async () => {
       try {
         const { data } = await axiosUser().get<JobData>(`/jobdata/${jobId}`);
@@ -95,11 +115,11 @@ const CurrentJob: React.FC = () => {
             (service) => service._id === data.service
           );
           const serviceName = serviceDetails ? serviceDetails.name : '';
-          localStorage.setItem('userId-job', data?.userId)
+          localStorage.setItem('userId-job', data?.userId);
           setJobData({ ...data, serviceName });
-          
+
           if (data.expertId) {
-            localStorage.setItem('expertId-job', data?.expertId)
+            localStorage.setItem('expertId-job', data?.expertId);
             const expertResponse = await axiosUser().get<ExpertData>(
               `/getexpert/${data.expertId}`
             );
@@ -118,15 +138,14 @@ const CurrentJob: React.FC = () => {
     }
   }, [services]);
 
-  const startVideoCall =() => {
-    const participantToCall = 'expert'
+  const startVideoCall = () => {
+    const participantToCall = 'expert';
     if (participantToCall) {
       startCall(participantToCall);
     } else {
-      console.error("No participants available to call");
+      console.error('No participants available to call');
     }
-  }
-  
+  };
 
   if (loading)
     return (
@@ -183,6 +202,11 @@ const CurrentJob: React.FC = () => {
                     </button>
                   </div>
                 </div>
+                {jobData.status === 'started' && (
+                  <div className="flex flex-col items-center justify-center p-3">
+                    <JobTimer isJobActive={isJobActive} />
+                  </div>
+                )}
 
                 {jobData.status === 'pending' && (
                   <div className="flex flex-col items-center p-2 rounded-lg">

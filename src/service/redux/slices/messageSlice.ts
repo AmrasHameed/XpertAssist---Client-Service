@@ -18,11 +18,14 @@ export const messagesSlice = createSlice({
     initialState,
     reducers: {
         addMessage: (state, action: PayloadAction<Message>) => {
-            state.messages.push(action.payload);  // Add new message to the array
+            state.messages.push(action.payload);  
         },
+        removeMessage: (state) =>{
+            state.messages = []
+        }
     },
 });
 
-export const { addMessage } = messagesSlice.actions;
+export const { addMessage, removeMessage } = messagesSlice.actions;
 
 export default messagesSlice;

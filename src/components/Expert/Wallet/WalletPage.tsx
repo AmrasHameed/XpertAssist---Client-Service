@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import Navbar from '../Home/Navbar';
 import Sidebar from '../Home/Sidebar';
-import Earnings from './Earnings';
+import Wallet from './Wallet';
 
 const EarningsPage = () => {
-  const [selectedOption, setSelectedOption] = useState('Earnings');
+  const [selectedOption, setSelectedOption] = useState('Wallet');
 
   return (
     <div className="flex min-h-screen">
@@ -15,7 +15,7 @@ const EarningsPage = () => {
       <div className="flex-grow flex flex-col">
         <Navbar />
         <div className="flex-grow p-6 bg-gray-100">
-          <Earnings />
+          <Wallet />
         </div>
       </div>
     </div>

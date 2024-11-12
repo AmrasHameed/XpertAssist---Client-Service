@@ -10,6 +10,7 @@ interface SidebarProps {
 const Sidebar = ({ selectedOption, setSelectedOption }: SidebarProps) => {
   const options = [
     { name: "Dashboard", icon: "dashboard", path: "/admin/dashboard" },
+    { name: "Jobs", icon: "construction", path: "/admin/jobs" },
     { name: "User Management", icon: "manage_accounts", path: "/admin/user-management" },
     { name: "Expert Management", icon: "supervisor_account", path: "/admin/expert-management" },
     { name: "Service Management", icon: "home_repair_service", path: "/admin/service-management" },

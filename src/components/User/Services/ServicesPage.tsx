@@ -42,7 +42,7 @@ const ServicesPage = () => {
 
           <div className="grid grid-cols-1 gap-6 mt-10 lg:grid-cols-3 lg:gap-8">
             {currentServices.map((service) => (
-              <Link key={service._id} to={''} className="hover:scale-x-105 text-white shadow-glow rounded-lg">
+              <Link key={service._id} to={`/request-service?serviceId=${service._id}`} className="hover:scale-x-105 text-white shadow-glow rounded-lg">
                 <div
                   key={service._id}
                   className="relative group border border-gray-300 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300"

@@ -17,4 +17,11 @@
     color: white; /* White color for the text */
     animation: glow 1.5s infinite; /* Applying the animation */
   }
+
+  .glowgreen {
+    font-size: 2rem; /* 2rem for the font size */
+    font-weight: 800; /* Equivalent to font-extrabold */
+    color: rgb(4, 255, 0); /* White color for the text */
+    animation: glow 1.5s infinite; /* Applying the animation */
+  }
   

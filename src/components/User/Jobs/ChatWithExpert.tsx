@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Socket } from 'socket.io-client'; // Assuming you're using socket.io-client
+import { Socket } from 'socket.io-client'; 
 import '../../Expert/Jobs/ChatWIthUser.css';
 import { RootState } from '../../../service/redux/store';
 import { addMessage } from '../../../service/redux/slices/messageSlice';
@@ -11,13 +11,13 @@ interface Message {
 }
 
 interface ChatWithExpertProps {
-  socket: Socket; // Type the socket prop here
+  socket: Socket; 
 }
 
 const ChatWithExpert: React.FC<ChatWithExpertProps> = ({ socket }) => {
   const messages = useSelector((state: RootState) => state.messages.messages);
   const [input, setInput] = useState('');
-  const jobId = localStorage.getItem('currentJob-user');
+  const expertId = localStorage.getItem('expertId-job')
   const dispatch = useDispatch()
 
   const handleSendMessage = () => {
@@ -28,7 +28,7 @@ const ChatWithExpert: React.FC<ChatWithExpertProps> = ({ socket }) => {
     };
     dispatch(addMessage(userMessage))
     socket?.emit('user_send_message', {
-      roomName: jobId,
+      expert: expertId,
       message: userMessage,
     });
     setInput('');

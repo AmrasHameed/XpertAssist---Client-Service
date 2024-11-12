@@ -8,7 +8,7 @@ import { Service } from '../../../interfaces/interface';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import { Tooltip } from 'react-tooltip';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   endSearching,
   startSearchWithTimer,
@@ -29,6 +29,9 @@ interface Coordinates {
 }
 
 const MapAndLocation = () => {
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const serviceId = params.get('serviceId');
   const startSearch = useSelector((state: RootState) => state.search.isOpen);
   const services = useSelector(
     (state: { services: { services: Service[] } }) => state.services.services
@@ -67,6 +70,15 @@ const MapAndLocation = () => {
     formik.setFieldValue('service', service._id);
     setIsOpen(false);
   };
+
+  useEffect(()=>{
+    if(serviceId) {
+      const selectedService = services.find((service) => service._id === serviceId);
+      if (selectedService) {
+        formik.setFieldValue('service', selectedService._id);
+      }
+    }
+  },[serviceId, services])
 
   useEffect(() => {
     if (socket) {

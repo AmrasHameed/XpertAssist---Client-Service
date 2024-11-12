@@ -35,7 +35,7 @@ const UserPrivateRoute = () => {
       }
     };
     fetchData();
-  }, [loggedIn, userId]);
+  }, [dispatch, loggedIn, userId]);
 
   if (loading) {
     return (

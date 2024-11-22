@@ -1,7 +1,7 @@
 import { io, Socket } from 'socket.io-client';
 
 const SOCKET_SERVER_URL =
-  import.meta.env.VITE_SOCKET_BASE_URL || 'http://localhost:5000';
+  import.meta.env.VITE_SOCKET_BASE_URL;
 
 let socket: Socket | null = null;
 

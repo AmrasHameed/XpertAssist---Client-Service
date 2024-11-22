@@ -35,7 +35,7 @@ const NewPassword = ({ email }) => {
 
   const formHandleSubmit = async (values: LoginFormValues) => {
     try {
-        console.log(email)
+      console.log(email);
       const password = values.password;
       const { data } = await axiosUser().post('/updatePassword', {
         email,
@@ -54,13 +54,19 @@ const NewPassword = ({ email }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-between px-12">
-      <div className="w-1/2 space-y-6">
-        <h1 className="text-3xl font-garamond">X P E R T A S S I S T</h1>
-        <h2 className="text-3xl font-semibold">Set New Password</h2>
-        <p className="text-gray-600">Please set a new password to continue.</p>
+    <div className="min-h-screen flex flex-col lg:flex-row items-center justify-between px-6 lg:px-12">
+      <div className="w-full lg:w-1/2 space-y-6">
+        <h1 className="text-3xl font-garamond text-center lg:text-left">
+          X P E R T A S S I S T
+        </h1>
+        <h2 className="text-3xl font-semibold text-center lg:text-left">
+          Set New Password
+        </h2>
+        <p className="text-gray-600 text-center lg:text-left">
+          Please set a new password to continue.
+        </p>
 
-        <form onSubmit={formik.handleSubmit} className="mt-6">
+        <form onSubmit={formik.handleSubmit} className="mt-6 space-y-6">
           <div className="relative mb-6">
             <input
               type="password"
@@ -125,11 +131,11 @@ const NewPassword = ({ email }) => {
         </p>
       </div>
 
-      <div className="w-1/2 flex justify-center items-center">
+      <div className="w-full lg:w-1/2 flex justify-center items-center mt-8 lg:mt-0">
         <Player
           autoplay
           loop
-          src={'/Animation - 1726125252610.json'} // Ensure this path is correct
+          src={'/Animation - 1726125252610.json'}
           style={{ height: '90%', width: '90%', background: 'transparent' }}
         />
       </div>

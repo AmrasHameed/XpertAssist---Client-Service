@@ -13,13 +13,14 @@ import { setServices } from '../../../service/redux/slices/serviceSlice';
 import { Service } from '../../../interfaces/interface';
 import { Link } from 'react-router-dom';
 
-
-const BUCKET =  import.meta.env.VITE_AWS_S3_BUCKET;
-const REGION =  import.meta.env.VITE_AWS_S3_REGION;
+const BUCKET = import.meta.env.VITE_AWS_S3_BUCKET;
+const REGION = import.meta.env.VITE_AWS_S3_REGION;
 
 const Services = () => {
-  const services = useSelector((state: { services: { services: Service[] } }) => state.services.services);
-  const dispatch = useDispatch()
+  const services = useSelector(
+    (state: { services: { services: Service[] } }) => state.services.services
+  );
+  const dispatch = useDispatch();
 
   useEffect(() => {
     fetchServiceData();
@@ -29,7 +30,7 @@ const Services = () => {
     try {
       const { data } = await axiosUser().get('/getServices');
       if (data) {
-        dispatch(setServices(data))
+        dispatch(setServices(data));
       } else {
         toast.error('No Services Found');
       }
@@ -37,7 +38,6 @@ const Services = () => {
       toast.error((error as Error).message);
     }
   };
-
 
   return (
     <div className="bg-gradient-to-b from-cyan-400 via-cyan-300 to-white py-12">
@@ -54,36 +54,60 @@ const Services = () => {
           </p>
         </div>
 
-        {/* Swiper Carousel */}
         <Swiper
           modules={[Navigation, Pagination, Autoplay]}
+          slidesPerView={3} // Default view for larger screens
           spaceBetween={40}
-          slidesPerView={3}
           autoplay={{ delay: 3000 }}
           loop={true}
           navigation={{
-            nextEl: '.custom-next-button', 
+            nextEl: '.custom-next-button',
             prevEl: '.custom-prev-button',
+          }}
+          breakpoints={{
+            960: {
+              slidesPerView: 3,
+              spaceBetween: 40
+            },
+            720: {
+              slidesPerView: 2,
+              spaceBetween: 40
+            },
+            540: {
+              slidesPerView: 2,
+              spaceBetween: 40
+            },
+            320: {
+              slidesPerView: 1,
+              spaceBetween: 20
+            },
           }}
           className="mySwiper"
         >
           {services.map((service, index) => (
             <SwiperSlide key={index}>
-              <div className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col border-2 transition-shadow duration-200 ease-in hover:scale-95 hover:shadow-none h-[400px]">
+              <div className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col border-2 transition-shadow duration-200 ease-in hover:scale-95 hover:shadow-none h-[430px]">
                 <img
                   className="w-full h-[200px] object-cover"
-                  src={service.serviceImage?`https://${BUCKET}.s3.${REGION}.amazonaws.com/${service.serviceImage}`:'image'}
+                  src={
+                    service.serviceImage
+                      ? `https://${BUCKET}.s3.${REGION}.amazonaws.com/${service.serviceImage}`
+                      : 'image'
+                  }
                   alt={service.name}
                 />
                 <div className="flex-1 p-6 flex flex-col">
                   <h3 className="text-lg font-semibold text-gray-900">
                     {service.name}
                   </h3>
-                  <p className="mt-3 text-gray-600 flex-1">{service.description}</p>
+                  <p className="mt-3 text-gray-600 flex-1">
+                    {service.description}
+                  </p>
                   <div className="mt-auto">
-                    <Link to={`/request-service?serviceId=${service._id}`}> <button className="w-full px-3 py-2 border-2 border-cyan-300 text-sky-300 font-semibold rounded hover:bg-cyan-300 hover:text-black transition-colors">
-                      Book now
-                    </button>
+                    <Link to={`/request-service?serviceId=${service._id}`}>
+                      <button className="w-full px-3 py-2 border-2 border-cyan-300 text-sky-300 font-semibold rounded hover:bg-cyan-300 hover:text-black transition-colors">
+                        Book now
+                      </button>
                     </Link>
                   </div>
                 </div>
@@ -92,10 +116,18 @@ const Services = () => {
           ))}
         </Swiper>
 
-        {/* Custom Navigation Buttons - Placed Below the Swiper */}
+        {/* Custom Navigation Buttons */}
         <div className="flex justify-center mt-6 space-x-4">
-          <FontAwesomeIcon icon={faArrowLeft} size='2xl' className='custom-prev-button px-4 py-2 text-cyan-900'/>
-          <FontAwesomeIcon icon={faArrowRight} size='2xl' className='custom-next-button px-4 py-2 text-cyan-900'/>
+          <FontAwesomeIcon
+            icon={faArrowLeft}
+            size="2xl"
+            className="custom-prev-button px-4 py-2 text-cyan-900 cursor-pointer hover:scale-110 transition-transform"
+          />
+          <FontAwesomeIcon
+            icon={faArrowRight}
+            size="2xl"
+            className="custom-next-button px-4 py-2 text-cyan-900 cursor-pointer hover:scale-110 transition-transform"
+          />
         </div>
       </div>
     </div>

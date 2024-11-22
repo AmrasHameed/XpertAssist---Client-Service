@@ -87,160 +87,203 @@ const ServiceHistory = () => {
   }
 
   return (
-    <div className="p-6 w-3/4 bg-white rounded-lg shadow-md ml-4">
-      <div className="max-w-4xl mx-auto p-4 font-sans text-gray-800">
-        <h2 className="text-3xl font-bold text-center mb-4 text-cyan-700">
-          Service History
-        </h2>
+    <div className="p-6 w-full sm:w-3/4 bg-white rounded-lg shadow-md ml-0 sm:ml-4">
+  <div className="max-w-4xl mx-auto p-4 font-sans text-gray-800">
+    <h2 className="text-xl sm:text-3xl font-bold text-center mb-4 text-cyan-700">
+      Service History
+    </h2>
 
-        <div className="space-y-4">
-          {selectedJobs.map((job) => {
-            const serviceDetails = services.find(
-              (service) => service._id === job.service
-            );
-            const serviceName = serviceDetails
-              ? serviceDetails.name
-              : 'Unknown Service';
+    <div className="space-y-4">
+      {selectedJobs.map((job) => {
+        const serviceDetails = services.find(
+          (service) => service._id === job.service
+        );
+        const serviceName = serviceDetails
+          ? serviceDetails.name
+          : 'Unknown Service';
 
-            return (
-              <div
-                key={job._id}
-                className="relative bg-gradient-to-br from-cyan-300  to-black rounded-xl shadow-md border border-cyan-300 transition-all transform hover:scale-105 hover:shadow-lg p-3 group"
-              >
-                <div className="absolute top-3 right-3 px-2 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
-                  {job?.status.charAt(0).toUpperCase() + job?.status.slice(1)}
+        return (
+          <div
+            key={job._id}
+            className="relative bg-gradient-to-br from-cyan-300 to-black rounded-xl shadow-md border border-cyan-300 transition-all transform hover:scale-105 hover:shadow-lg p-3 group"
+          >
+            <div className="absolute top-2 right-2 px-1.5 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
+              {job?.status.charAt(0).toUpperCase() + job?.status.slice(1)}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-5 gap-2 sm:gap-6">
+              {/* Expert Details */}
+              <div className="col-span-1 sm:col-span-2 flex flex-col items-center p-1.5 sm:p-3 bg-gradient-to-b from-white to-cyan-50 rounded-lg shadow-sm border border-cyan-200">
+                <div className="text-sm sm:text-lg font-semibold text-cyan-700">
+                  Expert
                 </div>
-
-                <div className="grid grid-cols-5 gap-3">
-                  <div className="col-span-2 flex flex-col items-center p-3 bg-gradient-to-b from-white to-cyan-50 rounded-lg shadow-sm border border-cyan-200 transform transition-transform group-hover:translate-y-1">
-                    <div className="text-lg font-semibold text-cyan-700">
-                      Expert
-                    </div>
-                    <img
-                      src={
-                        job.expertDetails.expertImage
-                          ? `https://${BUCKET}.s3.${REGION}.amazonaws.com/${job.expertDetails.expertImage}`
-                          : '/default-avatar.png'
-                      }
-                      alt="User Avatar"
-                      className="w-14 h-14 rounded-full border-2 border-cyan-400 shadow-sm mb-1"
-                    />
-                    <div className="text-center">
-                      <div className="text-lg font-semibold text-cyan-700">
-                        {job.expertDetails.name}
-                      </div>
-                      <div className="text-xs text-gray-600">
-                        {job.expertDetails.email}
-                      </div>
-                      <div className="flex items-center justify-center text-sm text-gray-500 mt-1 space-x-1">
-                        <FaMobile className="text-cyan-500" />
-                        <span>{job.expertDetails.mobile}</span>
-                      </div>
-                    </div>
+                <img
+                  src={
+                    job.expertDetails.expertImage
+                      ? `https://${BUCKET}.s3.${REGION}.amazonaws.com/${job.expertDetails.expertImage}`
+                      : '/default-avatar.png'
+                  }
+                  alt="User Avatar"
+                  className="w-10 h-10 sm:w-14 sm:h-14 rounded-full border-2 border-cyan-400 shadow-sm mb-1 sm:mb-2"
+                />
+                <div className="text-center">
+                  <div className="text-xs sm:text-lg font-semibold text-cyan-700">
+                    {job.expertDetails.name}
                   </div>
-
-                  <div className="col-span-3 p-3 space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <div className="p-2 bg-cyan-100 rounded-full">
-                        <FaWrench className="text-cyan-500" />
-                      </div>
-                      <div>
-                        <span className="font-semibold text-white">
-                          Service:
-                        </span>
-                        <span className="ml-1 text-white">{serviceName}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-2">
-                      <div className="p-2 bg-cyan-100 rounded-full">
-                        <FaClipboard className="text-cyan-500" />
-                      </div>
-                      <div>
-                        <span className="font-semibold text-white">
-                          Description:
-                        </span>
-                        <span className="ml-1 text-white">{job.notes}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-2">
-                      <div className="p-2 bg-cyan-100 rounded-full">
-                        <FaRoute className="text-cyan-500" />
-                      </div>
-                      <div>
-                        <span className="font-semibold text-white">
-                          Distance:
-                        </span>
-                        <span className="ml-1 text-white">
-                          {job.distance} km
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-2">
-                      <div className="p-2 bg-cyan-100 rounded-full">
-                        <FaRupeeSign className="text-cyan-500" />
-                      </div>
-                      <div>
-                        <span className="font-semibold text-white">
-                          Total Amount:
-                        </span>
-                        <span className="ml-1 text-lg font-bold text-green-300">
-                          ₹ {job.totalAmount}/-
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-2">
-                      <div className="p-2 rounded-full bg-gray-100">
-                        {job.payment === 'success' ? (
-                          <FaCheckCircle className="text-green-500" />
-                        ) : (
-                          <FaExclamationCircle className="text-yellow-500" />
-                        )}
-                      </div>
-                      <div>
-                        <span className="font-semibold text-white">
-                          Payment Status:
-                        </span>
-                        <span
-                          className={`ml-1 text-lg font-bold ${
-                            job.payment === 'success'
-                              ? 'text-green-300'
-                              : 'text-yellow-300'
-                          }`}
-                        >
-                          {job?.payment.charAt(0).toUpperCase() +
-                            job?.payment.slice(1)}
-                        </span>
-                      </div>
-                    </div>
+                  <div className="text-xs sm:text-sm text-gray-600">
+                    {job.expertDetails.email}
+                  </div>
+                  <div className="flex items-center justify-center text-xs sm:text-sm text-gray-500 mt-0.5 sm:mt-1 space-x-1">
+                    <FaMobile className="text-cyan-500" />
+                    <span>{job.expertDetails.mobile}</span>
                   </div>
                 </div>
               </div>
-            );
-          })}
-        </div>
 
-        {/* Pagination Controls */}
-        <div className="flex justify-center mt-4 space-x-2">
-          {Array.from({ length: totalPages }, (_, index) => (
+              {/* Service Details */}
+              <div className="col-span-1 sm:col-span-3 p-1.5 sm:p-3 space-y-1 sm:space-y-2">
+                <div className="flex items-center space-x-1.5 sm:space-x-2">
+                  <div className="p-1 sm:p-2 bg-cyan-100 rounded-full">
+                    <FaWrench className="text-cyan-500" />
+                  </div>
+                  <div>
+                    <span className="font-semibold text-xs sm:text-base text-white">
+                      Service:
+                    </span>
+                    <span className="ml-1 text-xs sm:text-base text-white">{serviceName}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-1.5 sm:space-x-2">
+                  <div className="p-1 sm:p-2 bg-cyan-100 rounded-full">
+                    <FaClipboard className="text-cyan-500" />
+                  </div>
+                  <div className="flex flex-wrap w-full">
+                    <span className="font-semibold text-xs sm:text-base text-white whitespace-nowrap">
+                      Description:
+                    </span>
+                    <span className="ml-1 text-xs sm:text-base text-white break-words overflow-hidden w-full">
+                      {job.notes}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-1.5 sm:space-x-2">
+                  <div className="p-1 sm:p-2 bg-cyan-100 rounded-full">
+                    <FaRoute className="text-cyan-500" />
+                  </div>
+                  <div>
+                    <span className="font-semibold text-xs sm:text-base text-white">
+                      Distance:
+                    </span>
+                    <span className="ml-1 text-xs sm:text-base text-white">
+                      {job.distance} km
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-1.5 sm:space-x-2">
+                  <div className="p-1 sm:p-2 bg-cyan-100 rounded-full">
+                    <FaRupeeSign className="text-cyan-500" />
+                  </div>
+                  <div>
+                    <span className="font-semibold text-xs sm:text-base text-white">
+                      Total Amount:
+                    </span>
+                    <span className="ml-1 text-sm sm:text-lg font-bold text-green-300">
+                      ₹ {job.totalAmount}/-
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-1.5 sm:space-x-2">
+                  <div className="p-1 rounded-full bg-gray-100">
+                    {job.payment === 'success' ? (
+                      <FaCheckCircle className="text-green-500" />
+                    ) : (
+                      <FaExclamationCircle className="text-yellow-500" />
+                    )}
+                  </div>
+                  <div>
+                    <span className="font-semibold text-xs sm:text-base text-white">
+                      Payment Status:
+                    </span>
+                    <span
+                      className={`ml-1 text-sm sm:text-lg font-bold ${
+                        job.payment === 'success'
+                          ? 'text-green-300'
+                          : 'text-yellow-300'
+                      }`}
+                    >
+                      {job?.payment.charAt(0).toUpperCase() +
+                        job?.payment.slice(1)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+
+    {/* Pagination Controls */}
+    <div className="flex flex-wrap justify-center mt-2 sm:mt-4 space-x-1 sm:space-x-2">
+      <button
+        onClick={() => handlePageChange(1)}
+        className={`px-2 py-0.5 sm:px-3 sm:py-1 rounded-lg text-xs sm:text-sm font-medium ${
+          currentPage === 1
+            ? 'bg-cyan-500 text-white'
+            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+        }`}
+      >
+        1
+      </button>
+
+      {currentPage > 3 && (
+        <span className="px-1 py-0.5 text-xs sm:text-sm text-gray-500">...</span>
+      )}
+
+      {Array.from({ length: totalPages }, (_, index) => index + 1)
+        .filter(
+          (page) => page >= currentPage - 1 && page <= currentPage + 1
+        )
+        .map((page) => {
+          if (page === 1 || page === totalPages) return null;
+          return (
             <button
-              key={index}
-              onClick={() => handlePageChange(index + 1)}
-              className={`px-3 py-1 rounded-lg text-sm font-medium ${
-                currentPage === index + 1
+              key={page}
+              onClick={() => handlePageChange(page)}
+              className={`px-2 py-0.5 sm:px-3 sm:py-1 rounded-lg text-xs sm:text-sm font-medium ${
+                currentPage === page
                   ? 'bg-cyan-500 text-white'
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
             >
-              {index + 1}
+              {page}
             </button>
-          ))}
-        </div>
-      </div>
+          );
+        })}
+
+      {currentPage < totalPages - 2 && (
+        <span className="px-1 py-0.5 text-xs sm:text-sm text-gray-500">...</span>
+      )}
+
+      {totalPages > 1 && (
+        <button
+          onClick={() => handlePageChange(totalPages)}
+          className={`px-2 py-0.5 sm:px-3 sm:py-1 rounded-lg text-xs sm:text-sm font-medium ${
+            currentPage === totalPages
+              ? 'bg-cyan-500 text-white'
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+          }`}
+        >
+          {totalPages}
+        </button>
+      )}
     </div>
+  </div>
+</div>
   );
 };
 

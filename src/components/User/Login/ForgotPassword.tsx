@@ -1,17 +1,17 @@
 import { useFormik } from 'formik';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Player } from '@lottiefiles/react-lottie-player';
 import axiosUser from '../../../service/axios/axiosUser';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import NewPassword from './NewPassword';
+import * as Yup from 'yup'; 
 
 const ForgotPassword = () => {
   const [otp, setOtp] = useState<string[]>(new Array(4).fill(''));
   const [otpPage, setOtpPage] = useState<boolean | null>(null);
   const [timeLeft, setTimeLeft] = useState<number>(30);
   const [showNewPassword, setShowNewPassword] = useState<boolean>(false); // New state to control the new password visibility
-  const navigate = useNavigate();
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
@@ -45,7 +45,7 @@ const ForgotPassword = () => {
       const { data } = await axiosUser().post('/otpVerify', formData);
       if (data.message === 'success') {
         toast.success('OTP matched Successfully');
-        setShowNewPassword(true); 
+        setShowNewPassword(true);
       } else {
         toast.error(data.message);
       }
@@ -60,7 +60,7 @@ const ForgotPassword = () => {
     try {
       const { data } = await axiosUser().post('/resendOtp', {
         email: formik.values.email,
-        name: 'User'
+        name: 'User',
       });
       if (data.message === 'OTP sent') {
         toast.success('OTP sent Successfully');
@@ -73,12 +73,18 @@ const ForgotPassword = () => {
     }
   };
 
+  const validationSchema = Yup.object({
+    email: Yup.string()
+      .email('Invalid email address')
+      .required('Email is required'),
+  });
+
   const formik = useFormik({
     initialValues: {
       email: '',
     },
+    validationSchema,
     onSubmit: async (values) => {
-      console.log('Reset link sent to:', values.email);
       try {
         await forgotOtp(values.email);
       } catch (err: unknown) {
@@ -108,13 +114,13 @@ const ForgotPassword = () => {
   return (
     <div>
       {showNewPassword ? (
-        <NewPassword email={formik.values.email}/>
+        <NewPassword email={formik.values.email} />
       ) : otpPage ? (
-        <div className="min-h-screen flex items-center justify-between px-10">
-          <div className="w-1/2 space-y-1">
+        <div className="min-h-screen flex flex-col md:flex-row items-center justify-between px-4 md:px-10">
+          <div className="w-full md:w-1/2 space-y-4 md:space-y-6">
             <div className="min-h-screen flex items-center justify-center">
               <div className="w-full max-w-md p-8 space-y-4 bg-white shadow-lg rounded-md">
-                <h1 className="text-2xl font-semibold text-center">
+                <h1 className="text-2xl md:text-3xl font-semibold text-center">
                   Verify OTP
                 </h1>
                 <div className="flex justify-center space-x-2">
@@ -156,7 +162,7 @@ const ForgotPassword = () => {
             </div>
           </div>
 
-          <div className="w-1/2 flex justify-center items-center">
+          <div className="hidden md:flex w-full md:w-1/2 justify-center items-center mt-8 md:mt-0">
             <Player
               autoplay
               loop
@@ -166,9 +172,11 @@ const ForgotPassword = () => {
           </div>
         </div>
       ) : (
-        <div className="min-h-screen flex items-center justify-between px-12">
-          <div className="w-1/2 space-y-6">
-            <h1 className="text-3xl font-garamond">X P E R T A S S I S T</h1>
+        <div className="min-h-screen flex flex-col md:flex-row items-center justify-between px-4 md:px-12">
+          <div className="w-full md:w-1/2 space-y-6">
+            <h1 className="text-3xl md:text-4xl font-garamond">
+              X P E R T A S S I S T
+            </h1>
             <h2 className="text-3xl font-semibold">Forgot Password</h2>
             <p className="text-gray-600">
               Enter your email address and we will send you a link to reset your
@@ -216,12 +224,16 @@ const ForgotPassword = () => {
             </p>
           </div>
 
-          <div className="w-1/2 flex justify-center items-center">
+          <div className="w-full md:w-1/2 md:p-20 sm:p-20 flex justify-center items-center mt-8 ">
             <Player
               autoplay
               loop
-              src={'/Animation - 1726125252610.json'} // Your animation JSON file
-              style={{ height: '90%', width: '90%', background: 'transparent' }}
+              src={'/Animation - 1726125252610.json'}
+              style={{
+                height: '90%',
+                width: '90%',
+                background: 'transparent',
+              }}
             />
           </div>
         </div>

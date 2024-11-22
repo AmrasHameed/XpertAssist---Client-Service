@@ -15,8 +15,8 @@ interface SocketProviderProps {
 
 export const SocketProvider = ({ children }: SocketProviderProps): JSX.Element => {
   const socket = useMemo(() => {
-    const token = localStorage.getItem('expertToken') || '';
-    const refreshToken = localStorage.getItem('expertRefreshToken') || '';
+    const token = localStorage.getItem('expertToken') || localStorage.getItem('userToken') ;
+    const refreshToken = localStorage.getItem('expertRefreshToken') || localStorage.getItem('refreshToken') ;
     return connectSocket(token, refreshToken);
   }, []);
 

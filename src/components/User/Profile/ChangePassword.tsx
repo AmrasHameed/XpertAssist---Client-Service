@@ -13,9 +13,8 @@ interface PasswordValues {
 }
 
 const ChangePassword = () => {
-
   const user = useSelector((store: { user: { userId: string } }) => store.user);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validationSchema = Yup.object({
@@ -31,10 +30,13 @@ const ChangePassword = () => {
   const handleSubmit = async (values: PasswordValues) => {
     try {
       setIsSubmitting(true);
-      const { data } = await axiosUser().post(`/changePassword/${user?.userId}`, values);
+      const { data } = await axiosUser().post(
+        `/changePassword/${user?.userId}`,
+        values
+      );
       if (data.message === 'success') {
         toast.success('Password changed successfully');
-        navigate('/')
+        navigate('/');
       } else {
         toast.error(data.message);
       }
@@ -46,8 +48,10 @@ const ChangePassword = () => {
   };
 
   return (
-    <div className="change-password p-8 w-3/4 bg-white rounded-lg shadow-glow ml-4">
-      <h2 className="text-2xl font-bold mb-6">Change Password</h2>
+    <div className="change-password p-6 sm:p-8 sm:mx-2 w-full sm:w-3/4 bg-white rounded-lg shadow-glow mx-auto">
+      <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-center sm:text-left">
+        Change Password
+      </h2>
 
       <Formik
         initialValues={{
@@ -59,67 +63,67 @@ const ChangePassword = () => {
         onSubmit={handleSubmit}
       >
         <Form>
-          <div className="mb-4">
+          <div className="mb-3 sm:mb-4">
             <label
               htmlFor="currentPassword"
-              className="block text-gray-700 font-semibold mb-2"
+              className="block text-gray-700 font-semibold mb-1 sm:mb-2"
             >
               Current Password
             </label>
             <Field
               type="password"
               name="currentPassword"
-              className="peer w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black"
+              className="peer w-full p-2 sm:p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black"
             />
             <ErrorMessage
               name="currentPassword"
               component="div"
-              className="text-red-500 mt-1"
+              className="text-red-500 text-sm mt-1"
             />
           </div>
 
-          <div className="mb-4">
+          <div className="mb-3 sm:mb-4">
             <label
               htmlFor="newPassword"
-              className="block text-gray-700 font-semibold mb-2"
+              className="block text-gray-700 font-semibold mb-1 sm:mb-2"
             >
               New Password
             </label>
             <Field
               type="password"
               name="newPassword"
-              className="peer w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black"
+              className="peer w-full p-2 sm:p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black"
             />
             <ErrorMessage
               name="newPassword"
               component="div"
-              className="text-red-500 mt-1"
+              className="text-red-500 text-sm mt-1"
             />
           </div>
 
-          <div className="mb-4">
+          <div className="mb-3 sm:mb-4">
             <label
               htmlFor="confirmPassword"
-              className="block text-gray-700 font-semibold mb-2"
+              className="block text-gray-700 font-semibold mb-1 sm:mb-2"
             >
               Confirm New Password
             </label>
             <Field
               type="password"
               name="confirmPassword"
-              className="peer w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black"
+              className="peer w-full p-2 sm:p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black"
             />
             <ErrorMessage
               name="confirmPassword"
               component="div"
-              className="text-red-500 mt-1"
+              className="text-red-500 text-sm mt-1"
             />
           </div>
 
-          <div className="mt-6">
+          <div className="mt-4 sm:mt-6">
             <button
               type="submit"
-              className={`bg-gray-800 text-white py-2 px-4 rounded hover:bg-black transition ${
+              className={`w-full sm:w-auto bg-gray-800 text-white py-2 px-4 rounded hover:bg-black transition ${
                 isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
               }`}
               disabled={isSubmitting}

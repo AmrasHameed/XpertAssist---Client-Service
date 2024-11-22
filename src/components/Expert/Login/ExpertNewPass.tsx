@@ -54,86 +54,83 @@ const ExpertNewPass = ({ email }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-between px-12">
-      <div className="w-1/2 space-y-6">
-        <h1 className="text-3xl font-garamond">X P E R T A S S I S T</h1>
-        <h2 className="text-3xl font-semibold">Set New Password</h2>
-        <p className="text-gray-600">Please set a new password to continue.</p>
+    <div className="min-h-screen flex flex-col lg:flex-row items-center justify-between px-4 lg:px-12">
+  <div className="w-full lg:w-1/2 space-y-6">
+    <h1 className="text-3xl font-garamond text-center lg:text-left">X P E R T A S S I S T</h1>
+    <h2 className="text-3xl font-semibold text-center lg:text-left">Set New Password</h2>
+    <p className="text-gray-600 text-center lg:text-left">Please set a new password to continue.</p>
 
-        <form onSubmit={formik.handleSubmit} className="mt-6">
-          <div className="relative mb-6">
-            <input
-              type="password"
-              id="password"
-              value={formik.values.password}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              name="password"
-              className="peer w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black placeholder-transparent"
-              placeholder="New Password"
-            />
-            <label
-              htmlFor="password"
-              className="absolute left-2 -top-3.5 text-sm text-gray-600 bg-white px-1 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:-top-3.5 peer-focus:text-sm peer-focus:text-black"
-            >
-              New Password
-            </label>
-            {formik.touched.password && formik.errors.password ? (
-              <div className="text-red-500 text-sm">
-                {formik.errors.password}
-              </div>
-            ) : null}
-          </div>
-
-          <div className="relative mb-6">
-            <input
-              type="password"
-              id="confirmPassword"
-              value={formik.values.confirmPassword}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              name="confirmPassword"
-              className="peer w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black placeholder-transparent"
-              placeholder="Confirm Password"
-            />
-            <label
-              htmlFor="confirmPassword"
-              className="absolute left-2 -top-3.5 text-sm text-gray-600 bg-white px-1 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:-top-3.5 peer-focus:text-sm peer-focus:text-black"
-            >
-              Confirm Password
-            </label>
-            {formik.touched.confirmPassword && formik.errors.confirmPassword ? (
-              <div className="text-red-500 text-sm">
-                {formik.errors.confirmPassword}
-              </div>
-            ) : null}
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-black text-white p-2 rounded-lg hover:bg-gray-800"
-          >
-            Update Password
-          </button>
-        </form>
-
-        <p className="mt-6 text-center text-gray-600">
-          Remembered your password?{' '}
-          <Link to={'/login'} className="text-blue-600">
-            Login
-          </Link>
-        </p>
-      </div>
-
-      <div className="w-1/2 flex justify-center items-center">
-        <Player
-          autoplay
-          loop
-          src={'/Animation - 1726125252610.json'} // Ensure this path is correct
-          style={{ height: '90%', width: '90%', background: 'transparent' }}
+    <form onSubmit={formik.handleSubmit} className="mt-6">
+      <div className="relative mb-6">
+        <input
+          type="password"
+          id="password"
+          value={formik.values.password}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          name="password"
+          className="peer w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black placeholder-transparent"
+          placeholder="New Password"
         />
+        <label
+          htmlFor="password"
+          className="absolute left-2 -top-3.5 text-sm text-gray-600 bg-white px-1 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:-top-3.5 peer-focus:text-sm peer-focus:text-black"
+        >
+          New Password
+        </label>
+        {formik.touched.password && formik.errors.password ? (
+          <div className="text-red-500 text-sm">{formik.errors.password}</div>
+        ) : null}
       </div>
-    </div>
+
+      <div className="relative mb-6">
+        <input
+          type="password"
+          id="confirmPassword"
+          value={formik.values.confirmPassword}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          name="confirmPassword"
+          className="peer w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black placeholder-transparent"
+          placeholder="Confirm Password"
+        />
+        <label
+          htmlFor="confirmPassword"
+          className="absolute left-2 -top-3.5 text-sm text-gray-600 bg-white px-1 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:-top-3.5 peer-focus:text-sm peer-focus:text-black"
+        >
+          Confirm Password
+        </label>
+        {formik.touched.confirmPassword && formik.errors.confirmPassword ? (
+          <div className="text-red-500 text-sm">{formik.errors.confirmPassword}</div>
+        ) : null}
+      </div>
+
+      <button
+        type="submit"
+        className="w-full bg-black text-white p-2 rounded-lg hover:bg-gray-800"
+      >
+        Update Password
+      </button>
+    </form>
+
+    <p className="mt-6 text-center text-gray-600">
+      Remembered your password?{' '}
+      <Link to={'/expert'} className="text-blue-600">
+        Login
+      </Link>
+    </p>
+  </div>
+
+  <div className="w-full lg:w-1/2 flex justify-center items-center mt-8 lg:mt-0">
+    <Player
+      autoplay
+      loop
+      src={'/Animation - 1726125252610.json'}
+      style={{ height: '90%', width: '90%', background: 'transparent' }}
+    />
+  </div>
+</div>
+
   );
 };
 

@@ -69,6 +69,17 @@ const ProfileDetails = () => {
     expertImage: expert.image || '',
   });
 
+  useEffect(() => {
+    setInitialValues({
+      id: expert.expertId || '',
+      name: expert.expert || '',
+      email: expert.email || '',
+      mobile: expert.mobile || '',
+      expertImage: expert.image || '',
+    });
+    setPreviewImage(expert.image ? `https://${BUCKET}.s3.${REGION}.amazonaws.com/${expert.image}` : null);
+  }, [expert]);
+
   const serviceDetails = services.find(
     (service) => service._id === expert.service
   );

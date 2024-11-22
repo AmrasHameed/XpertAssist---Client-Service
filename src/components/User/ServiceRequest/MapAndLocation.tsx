@@ -361,12 +361,12 @@ const MapAndLocation = () => {
       {startSearch ? (
         <ExpertSearching />
       ) : (
-        <div className="bg-gradient-to-b from-black via-black to-white min-h-screen flex items-center justify-center pb-10">
-          <div className="relative flex">
-            <div className="flex flex-col justify-start ml-4 p-2">
+        <div className="bg-gradient-to-b from-black via-black to-white min-h-screen flex flex-col lg:flex-row items-center justify-center p-4 lg:p-0">
+          <div className="w-full max-w-7xl flex flex-col lg:flex-row space-y-6 lg:space-y-0 lg:space-x-6">
+            <div className="w-full lg:w-1/2 flex flex-col justify-start p-4 rounded-lg">
               <form onSubmit={formik.handleSubmit}>
-                <div className="flex flex-col">
-                  <h1 className="text-[2.5rem] font-extrabold text-white text-shadow-glow">
+                <div className="flex flex-col mb-4">
+                  <h1 className="text-3xl md:text-[2.5rem] font-extrabold text-white text-shadow-glow">
                     Select the{' '}
                     <span
                       className="relative inline-block text-shadow-none"
@@ -381,7 +381,7 @@ const MapAndLocation = () => {
                       Location
                     </span>
                   </h1>
-                  <h1 className="text-[2.5rem] font-extrabold text-white text-shadow-glow">
+                  <h1 className="text-3xl md:text-[2.5rem] font-extrabold text-white text-shadow-glow">
                     and{' '}
                     <span
                       className="relative inline-block text-shadow-none"
@@ -398,13 +398,13 @@ const MapAndLocation = () => {
                   </h1>
                 </div>
 
-                <div className="relative w-[450px] mt-6">
+                <div className="relative w-full mb-4">
                   <input
                     type="text"
                     value={searchInput}
                     onChange={handleInputChange}
                     placeholder="Search for places..."
-                    className="p-3  rounded-lg border border-gray-300 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-[400px] transition duration-200"
+                    className="p-3 w-full rounded-lg border border-gray-300 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
                   />
                   <span className="absolute inset-y-0 right-0.5 flex items-center group">
                     <button
@@ -488,7 +488,7 @@ const MapAndLocation = () => {
                     </span>
                   </div>
                   {isOpen && (
-                    <ul className="absolute w-full bg-white border border-gray-300 rounded mt-1 z-10">
+                    <ul className="absolute w-full bg-white border border-gray-300 rounded mt-1 z-10 max-h-60 overflow-y-auto">
                       {services.map((service) => (
                         <li
                           key={service._id}
@@ -521,7 +521,7 @@ const MapAndLocation = () => {
                     onBlur={formik.handleBlur}
                     value={formik.values.notes || ''}
                     rows="5"
-                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    className="block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   ></textarea>
                   {formik.errors.notes && formik.touched.notes && (
                     <div className="text-red-500 text-sm">
@@ -538,9 +538,8 @@ const MapAndLocation = () => {
                 </button>
               </form>
             </div>
-            <div className="border-2 h-[500px] w-[500px] rounded-lg m-2">
+            <div className="w-full lg:w-1/2 h-[300px] md:h-[500px] border-2 rounded-lg">
               <div className="h-full w-full flex-shrink-0 p-2 rounded-full relative hover:ring-2">
-                {' '}
                 <div id="map" className="h-full w-full "></div>
                 {!loading && (
                   <div className="absolute bottom-8 left-2 bg-black bg-opacity-50 text-white p-2 rounded-lg z-10">

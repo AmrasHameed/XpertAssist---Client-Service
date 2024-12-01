@@ -1,77 +1,84 @@
-/* RotatingCircle.css */
 .container1 {
-    position: relative;
-    margin-top: 45%;
-    left: 70%;
-    border-radius: 50%;
-    height: 136px;
-    width: 136px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  position: relative;
+  border-radius: 50%;
+  height: 15vw; /* Responsive scaling */
+  width: 15vw;
+  max-height: 136px;
+  max-width: 136px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto; /* Centers horizontally */
+}
+
+.rotating-wrapper {
+  position: relative;
+  animation: rotate_3922 1.2s linear infinite; /* Rotates continuously */
+  height: 100%;
+  width: 100%;
+}
+
+.blur-circle {
+  position: absolute;
+  border-radius: 50%;
+  height: 100%;
+  width: 100%;
+  background-color: #9b59b6;
+  background-image: linear-gradient(#9b59b6, #84cdfa, #5ad1cd);
+}
+
+.blur-circle.blur-1 {
+  filter: blur(5px);
+}
+.blur-circle.blur-2 {
+  filter: blur(10px);
+}
+.blur-circle.blur-3 {
+  filter: blur(25px);
+}
+.blur-circle.blur-4 {
+  filter: blur(50px);
+}
+
+.inner-circle {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  background-color: #fff;
+  border: 5px solid #ffffff;
+  border-radius: 50%;
+}
+
+.static-text {
+  position: absolute;
+  z-index: 1;
+  color: #4f46e5;
+  font-weight: bolder;
+  font-size: 1.5vw; /* Scales with viewport */
+  max-font-size: 28px;
+  transform: translate(-50%, -50%);
+  top: 50%; /* Vertically centered */
+  left: 50%; /* Horizontally centered */
+}
+
+@keyframes rotate_3922 {
+  from {
+    transform: rotate(0deg);
   }
-  
-  .rotating-wrapper {
-    position: relative; /* Use relative positioning for the inner container */
-    animation: rotate_3922 1.2s linear infinite; /* Apply rotation here */
-    height: 100%;
-    width: 100%;
+  to {
+    transform: rotate(360deg);
   }
-  
-  .blur-circle {
-    position: absolute;
-    border-radius: 50%;
-    height: 100%;
-    width: 100%;
-    background-color: #9b59b6;
-    background-image: linear-gradient(#9b59b6, #84cdfa, #5ad1cd);
+}
+
+@media (max-width: 480px) {
+  .container1 {
+    height: 120px; /* Set a fixed height on small screens */
+    width: 120px; /* Set a fixed width on small screens */
   }
-  
-  .blur-circle.blur-1 {
-    filter: blur(5px);
-  }
-  
-  .blur-circle.blur-2 {
-    filter: blur(10px);
-  }
-  
-  .blur-circle.blur-3 {
-    filter: blur(25px);
-  }
-  
-  .blur-circle.blur-4 {
-    filter: blur(50px);
-  }
-  
-  .inner-circle {
-    content: '';
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    right: 10px;
-    bottom: 10px;
-    background-color: #fff;
-    border: solid 5px #ffffff;
-    border-radius: 50%;
-  }
-  
+
   .static-text {
-    position: absolute; /* Absolute positioning */
-    z-index: 1; /* Ensure text is above the blurred spans */
-    color: #4f46e5 ; /* Text color */
-    font-weight: bolder; /* Font weight */
-    font-size: 28px; /* Font size */
-    transform: translate(-50%, -50%); 
-    top:0;
-    left: 0%; /* Center horizontally */
+    font-size: 18px; /* Adjust font size on smaller screens */
   }
-  
-  @keyframes rotate_3922 {
-    from {
-      transform: translate(-50%, -50%) rotate(0deg);
-    }
-    to {
-      transform: translate(-50%, -50%) rotate(360deg);
-    }
-  }
-  
+}

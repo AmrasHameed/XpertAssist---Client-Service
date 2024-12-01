@@ -5,7 +5,7 @@ import axiosExpert from '../../../service/axios/axiosExpert';
 import { toast } from 'react-toastify';
 import { RadialChart } from './RadialChart';
 import { RootState } from '@/service/redux/store';
-import { BarChart, BarChartMonthly } from './BarChart';
+import { BarChartMonthly } from './BarChart';
 import { Link } from 'react-router-dom';
 
 const Dashboard = () => {
@@ -63,13 +63,20 @@ const Dashboard = () => {
     fetchServiceData();
   }, [dispatch, expertId]);
 
-  if(expert.isVerified === 'false') {
+  if (expert.isVerified === 'false') {
     return (
-      <div className='flex flex-col items-center'>
-      <div className='text-center text-xl text-red-500 font-bold'>Get Verified to Recieve Service Requests</div>
-      <Link to={'/expert/profile'}><button className='bg-gray-800 text-white py-1 px-3 rounded hover:bg-black'> Verify </button></Link>
+      <div className="flex flex-col items-center">
+        <div className="text-center text-xl text-red-500 font-bold">
+          Get Verified to Recieve Service Requests
+        </div>
+        <Link to={'/expert/profile'}>
+          <button className="bg-gray-800 text-white py-1 px-3 rounded hover:bg-black">
+            {' '}
+            Verify{' '}
+          </button>
+        </Link>
       </div>
-    )
+    );
   }
 
   return (
@@ -77,6 +84,8 @@ const Dashboard = () => {
       <div className="flex flex-row p-3 m-2 -mx-1 justify-between space-x-1">
         <RadialChart
           color={'1'}
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          //@ts-expect-error
           value={totalEarning.toFixed(2)}
           type={'Earning'}
           growth={totalEarningsGrowth}

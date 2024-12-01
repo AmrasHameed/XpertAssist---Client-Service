@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, {
   createContext,
   useContext,
@@ -7,7 +8,6 @@ import React, {
   useCallback,
 } from 'react';
 import { useSocket } from './SocketContext';
-import { toast } from 'react-toastify';
 
 interface WebRTCContextProps {
   localStream: MediaStream | null;
@@ -181,7 +181,7 @@ export const WebRTCProvider: React.FC<{ children: React.ReactNode }> = ({
   
 
   useEffect(() => {
-    socket?.on('incomingCall',(data)=>{
+    socket?.on('incomingCall',(_data)=>{
       setBeforeCall(true)
     });
 

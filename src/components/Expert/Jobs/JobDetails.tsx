@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
 import '../../../../OlaMapsWebSDK/OlaMapsWebSDK/style.css';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-expect-error
 import { OlaMaps } from '../../../../OlaMapsWebSDK/OlaMapsWebSDK/olamaps-js-sdk.es';
 import axios from 'axios';
 
@@ -197,7 +199,11 @@ const JobDetails: React.FC<JobDetailsProps> = ({ jobData }) => {
 
         <div className="flex flex-col items-end">
           <div className="text-4xl font-bold text-gray-800 pr-5">
-          ₹ {((jobData.totalAmount || 0) - (jobData.totalAmount || 0) * 0.10).toFixed(2)}
+            ₹{' '}
+            {(
+              (jobData.totalAmount || 0) -
+              (jobData.totalAmount || 0) * 0.1
+            ).toFixed(2)}
           </div>
           <p className="text-[0.775rem] text-black text-center mt-2">
             *Additional amount for <br />
@@ -208,9 +214,11 @@ const JobDetails: React.FC<JobDetailsProps> = ({ jobData }) => {
           </p>
         </div>
       </div>
-        {jobData.status === 'started' && (
-          <p className='text-center text-red-500 text-sm'>*Press Completed when you complete the task.</p>
-        )}
+      {jobData.status === 'started' && (
+        <p className="text-center text-red-500 text-sm">
+          *Press Completed when you complete the task.
+        </p>
+      )}
       {jobData.status === 'pending' && (
         <div className="border-2 h-[500px] w-[713px] rounded-lg m-2">
           <div id="map" className="h-full w-full"></div>

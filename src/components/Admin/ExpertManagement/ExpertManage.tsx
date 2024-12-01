@@ -3,9 +3,10 @@ import { axiosAdmin } from '../../../service/axios/axiosAdmin';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
 import { Service } from '../../../interfaces/interface';
+import Loading from '@/utils/Loading';
 
 interface Expert {
-  accountStatus: string;
+  accountStatus: 'Blocked' | 'UnBlocked';
   _id: string;
   name: string;
   email: string;
@@ -26,6 +27,7 @@ const REGION =  import.meta.env.VITE_AWS_S3_REGION;
 
 const ExpertManage = () => {
   const [experts, setExperts] = useState<Expert[]>([]);
+  const [isLoading, SetIsLoading] = useState<boolean>(false)
   const services = useSelector(
     (state: { services: { services: Service[] } }) => state.services.services
   );
@@ -35,19 +37,22 @@ const ExpertManage = () => {
   const totalPages = Math.ceil(experts.length / expertsPerPage);
 
   useEffect(() => {
+    SetIsLoading(true)
     fetchExpertData();
   }, [currentPage]);
 
   const fetchExpertData = async () => {
     try {
       const { data } = await axiosAdmin().get('/getExperts');
-      console.log(data);
       if (data) {
+        SetIsLoading(false)
         setExperts(data);
       } else {
+        SetIsLoading(false)
         toast.error('No Experts Found');
       }
     } catch (error) {
+      SetIsLoading(false)
       toast.error((error as Error).message);
     }
   };
@@ -81,6 +86,7 @@ const ExpertManage = () => {
   return (
     <div>
       {experts.length === 0 ? (
+        isLoading?<Loading/>:
         <div>
           <h1 className="flex justify-center items-center text-grey-800 text-3xl pt-3 mt-7">
             Experts List is Empty

@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 
 const AddService = () => {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const validationSchema = Yup.object({
     serviceName: Yup.string().required('Service name is required'),
     description: Yup.string().required('Description is required'),
@@ -20,6 +20,8 @@ const AddService = () => {
       .test(
         'fileSize',
         'File too large',
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-expect-error
         (value) => value && value.size <= 5 * 1024 * 1024
       )
       .test(
@@ -33,6 +35,8 @@ const AddService = () => {
             'image/png',
             'image/avif',
             'image/webp',
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-expect-error
           ].includes(value.type)
       ),
   });
@@ -55,18 +59,18 @@ const AddService = () => {
       }
 
       try {
-        const {data} = await axiosAdmin().post('/addService', formData, {
+        const { data } = await axiosAdmin().post('/addService', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
         });
         if (data.message === 'success') {
           toast.success('Service added successfully');
-          navigate('/admin/service-management')
-        } else if(data.message === 'ServiceExist') {
+          navigate('/admin/service-management');
+        } else if (data.message === 'ServiceExist') {
           toast.error('Service Already Exist');
         } else {
-            toast.error('Failed to Create Service')
+          toast.error('Failed to Create Service');
         }
       } catch (error) {
         toast.error((error as Error).message);

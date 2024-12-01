@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { AppDispatch } from "../store";
-import { AppThunk } from "../store";
 
 interface SearchState {
   isOpen: boolean;

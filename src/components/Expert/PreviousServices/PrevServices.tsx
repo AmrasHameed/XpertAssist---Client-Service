@@ -57,7 +57,7 @@ const PrevServices = () => {
         const { data } = await axiosExpert().get<{ jobs: JobData[] }>(
           `/previousJobs/${expertId}`
         );
-        console.log(data.jobs)
+        console.log(data.jobs);
         setJobData(data.jobs);
       } catch (error) {
         toast.error((error as Error).message);
@@ -87,7 +87,9 @@ const PrevServices = () => {
           const serviceDetails = services.find(
             (service) => service._id === job.service
           );
-          const serviceName = serviceDetails ? serviceDetails.name : 'Unknown Service';
+          const serviceName = serviceDetails
+            ? serviceDetails.name
+            : 'Unknown Service';
 
           return (
             <div
@@ -100,8 +102,8 @@ const PrevServices = () => {
 
               <div className="grid grid-cols-5 gap-4">
                 <div className="col-span-2 flex flex-col items-center p-4 bg-gradient-to-b from-white to-indigo-50 rounded-xl shadow-md border border-indigo-200 transform transition-transform group-hover:translate-y-1">
-                <div className="text-lg font-semibold text-indigo-700">
-                  User
+                  <div className="text-lg font-semibold text-indigo-700">
+                    User
                   </div>
                   <img
                     src={
@@ -132,7 +134,9 @@ const PrevServices = () => {
                       <FaWrench className="text-indigo-500" />
                     </div>
                     <div>
-                      <span className="font-semibold text-gray-700">Service:</span>
+                      <span className="font-semibold text-gray-700">
+                        Service:
+                      </span>
                       <span className="ml-1 text-gray-600">{serviceName}</span>
                     </div>
                   </div>
@@ -142,7 +146,9 @@ const PrevServices = () => {
                       <FaClipboard className="text-indigo-500" />
                     </div>
                     <div>
-                      <span className="font-semibold text-gray-700">Description:</span>
+                      <span className="font-semibold text-gray-700">
+                        Description:
+                      </span>
                       <span className="ml-1 text-gray-600">{job.notes}</span>
                     </div>
                   </div>
@@ -152,8 +158,12 @@ const PrevServices = () => {
                       <FaRoute className="text-indigo-500" />
                     </div>
                     <div>
-                      <span className="font-semibold text-gray-700">Distance:</span>
-                      <span className="ml-1 text-gray-600">{job.distance} km</span>
+                      <span className="font-semibold text-gray-700">
+                        Distance:
+                      </span>
+                      <span className="ml-1 text-gray-600">
+                        {job.distance} km
+                      </span>
                     </div>
                   </div>
 
@@ -162,36 +172,50 @@ const PrevServices = () => {
                       <FaRupeeSign className="text-indigo-500" />
                     </div>
                     <div>
-                      <span className="font-semibold text-gray-700">Total Amount:</span>
+                      <span className="font-semibold text-gray-700">
+                        Total Amount:
+                      </span>
                       <span className="ml-1 text-lg font-bold text-green-700">
                         ₹ {job.totalAmount}/-
                       </span>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                      <div className="p-2 rounded-full bg-gray-100">
-                        {job.payment === 'success' ? (
+                    <div className="p-2 rounded-full bg-gray-100">
+                      {
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        //@ts-expect-error
+                        job.payment === 'success' ? (
                           <FaCheckCircle className="text-green-500" />
                         ) : (
                           <FaExclamationCircle className="text-yellow-500" />
-                        )}
-                      </div>
-                      <div>
-                        <span className="font-semibold text-gray-700">
-                          Payment Status:
-                        </span>
-                        <span
-                          className={`ml-1 text-lg font-bold ${
-                            job.payment === 'success'
-                              ? 'text-green-500'
-                              : 'text-yellow-500'
-                          }`}
-                        >
-                          {job?.payment.charAt(0).toUpperCase() +
-                            job?.payment.slice(1)}
-                        </span>
-                      </div>
+                        )
+                      }
                     </div>
+                    <div>
+                      <span className="font-semibold text-gray-700">
+                        Payment Status:
+                      </span>
+                      <span
+                        className={`ml-1 text-lg font-bold ${
+                          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                          //@ts-expect-error
+                          job.payment === 'success'
+                            ? 'text-green-500'
+                            : 'text-yellow-500'
+                        }`}
+                      >
+                        {
+                          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                          //@ts-expect-error
+                          job?.payment.charAt(0).toUpperCase() +
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            //@ts-expect-error
+                            job?.payment.slice(1)
+                        }
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

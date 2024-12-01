@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState } from 'react';
 import axiosExpert from '../../../service/axios/axiosExpert';
 import Navbar from '../Home/Navbar';
@@ -56,7 +57,7 @@ const CurrentJobExpert = () => {
   const [isJobActive, setIsJobActive] = useState<boolean>(
     () => localStorage.getItem('isJobActive') === 'true'
   );
-  const jobId = localStorage.getItem('currentJob-expert')
+  const jobId = localStorage.getItem('currentJob-expert');
   const [hourlyRate, setHourlyRate] = useState<number>();
   const [isWaitingForPayment, setIsWaitingForPayment] = useState<boolean>(
     () => {
@@ -75,7 +76,7 @@ const CurrentJobExpert = () => {
   const socket = useSocket();
   const { startCall } = useWebRTC();
   const dispatch = useDispatch();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const expertId = useSelector(
     (state: { expert: { expertId: string } }) => state.expert.expertId
@@ -107,6 +108,8 @@ const CurrentJobExpert = () => {
       localStorage.setItem('expertToken', token);
       localStorage.setItem('expertRefreshToken', refreshToken);
     });
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-expect-error
     socket?.on('start-job', (expertId, userId) => {
       setIsJobActive(true);
       localStorage.setItem('isJobActive', 'true');
@@ -159,20 +162,20 @@ const CurrentJobExpert = () => {
     });
     socket?.on('paymentConfirmed', () => {
       setIsWaitingForPayment(false);
-      localStorage.setItem('isWaitingForPayment','false')
-      setTimeout(()=>{
-        navigate('/expert')
-        localStorage.removeItem('cashAmount')
-        localStorage.removeItem('currentJob-expert')
-        localStorage.removeItem('expertId-job')
-        localStorage.removeItem('hourlyRate')
-        localStorage.removeItem('isCashRecieved')
-        localStorage.removeItem('isCompleted')
-        localStorage.removeItem('isWaitingForPayment')
-        localStorage.removeItem('jobStopTime')
-        localStorage.removeItem('userId-job')
-        dispatch(removeMessage())
-      },5000)
+      localStorage.setItem('isWaitingForPayment', 'false');
+      setTimeout(() => {
+        navigate('/expert');
+        localStorage.removeItem('cashAmount');
+        localStorage.removeItem('currentJob-expert');
+        localStorage.removeItem('expertId-job');
+        localStorage.removeItem('hourlyRate');
+        localStorage.removeItem('isCashRecieved');
+        localStorage.removeItem('isCompleted');
+        localStorage.removeItem('isWaitingForPayment');
+        localStorage.removeItem('jobStopTime');
+        localStorage.removeItem('userId-job');
+        dispatch(removeMessage());
+      }, 5000);
     });
     return () => {
       socket?.off('newTokens');
@@ -275,30 +278,34 @@ const CurrentJobExpert = () => {
     });
   };
 
-  const handleConfirmReceipt = (confirmed:boolean) => {
+  const handleConfirmReceipt = (confirmed: boolean) => {
     if (confirmed) {
-      setIsWaitingForPayment(false)
-      localStorage.setItem('isWaitingForPayment','false')
-      socket?.emit('cashRecieved',{userId:jobData?.userId, amount: cashAmount, expertId, jobId})
-      setTimeout(()=>{
-        navigate('/expert')
-        localStorage.removeItem('cashAmount')
-        localStorage.removeItem('currentJob-expert')
-        localStorage.removeItem('expertId-job')
-        localStorage.removeItem('hourlyRate')
-        localStorage.removeItem('isCashRecieved')
-        localStorage.removeItem('isCompleted')
-        localStorage.removeItem('isWaitingForPayment')
-        localStorage.removeItem('jobStopTime')
-        localStorage.removeItem('userId-job')
-        dispatch(removeMessage())
-      },5000)
+      setIsWaitingForPayment(false);
+      localStorage.setItem('isWaitingForPayment', 'false');
+      socket?.emit('cashRecieved', {
+        userId: jobData?.userId,
+        amount: cashAmount,
+        expertId,
+        jobId,
+      });
+      setTimeout(() => {
+        navigate('/expert');
+        localStorage.removeItem('cashAmount');
+        localStorage.removeItem('currentJob-expert');
+        localStorage.removeItem('expertId-job');
+        localStorage.removeItem('hourlyRate');
+        localStorage.removeItem('isCashRecieved');
+        localStorage.removeItem('isCompleted');
+        localStorage.removeItem('isWaitingForPayment');
+        localStorage.removeItem('jobStopTime');
+        localStorage.removeItem('userId-job');
+        dispatch(removeMessage());
+      }, 5000);
     } else {
-      socket?.emit('cashNotRecieved',{userId:jobData?.userId})
+      socket?.emit('cashNotRecieved', { userId: jobData?.userId });
     }
-    setIsCashRecieved(false); 
+    setIsCashRecieved(false);
   };
-  
 
   if (loading)
     return (
@@ -343,13 +350,17 @@ const CurrentJobExpert = () => {
                   onClick={() => handleConfirmReceipt(true)}
                   className="bg-green-500 border-2 hover:text-green-500 hover:bg-white hover:border-2 hover:border-green-600 text-white font-semibold py-2 px-4 rounded-lg flex"
                 >
-                  <span className='material-symbols-outlined font-extrabold pt-1'>done_outline</span>
+                  <span className="material-symbols-outlined font-extrabold pt-1">
+                    done_outline
+                  </span>
                 </button>
                 <button
                   onClick={() => handleConfirmReceipt(false)}
                   className="bg-red-500 border-2 hover:text-red-500 hover:bg-white text-white hover:border-2 hover:border-red-600 font-semibold py-2 px-4 rounded-lg"
                 >
-                  <span className='material-symbols-outlined font-extrabold pt-1'>close</span>
+                  <span className="material-symbols-outlined font-extrabold pt-1">
+                    close
+                  </span>
                 </button>
               </div>
             </div>
@@ -392,11 +403,13 @@ const CurrentJobExpert = () => {
                       }}
                     />
                     <p className="glow text-green-600 font-extrabold text-4xl mt-4 mb-6">
-                      {cashAmount ? (`Fantastic job! The amount ${cashAmount} will be deducted from your wallet since the user has paid in cash.`):(`Fantastic job! You've successfully earned ₹${(
-                        (jobData.totalAmount || 0) -
-                        (jobData.totalAmount || 0) * 0.1 +
-                        hourlyRate
-                      ).toFixed(2)}! Added to your wallet.`)}
+                      {cashAmount
+                        ? `Fantastic job! The amount ${cashAmount} will be deducted from your wallet since the user has paid in cash.`
+                        : `Fantastic job! You've successfully earned ₹${(
+                            (jobData.totalAmount || 0) -
+                            (jobData.totalAmount || 0) * 0.1 +
+                            hourlyRate
+                          ).toFixed(2)}! Added to your wallet.`}
                     </p>
                   </>
                 )}
@@ -490,12 +503,12 @@ const CurrentJobExpert = () => {
 
                     {jobData.status === 'started' && (
                       <div className="flex flex-col items-center justify-center ">
-                        <div className="p-3">
+                        <div className="">
                           <JobTimer isJobActive={isJobActive} />
                         </div>
                         <button
                           onClick={handleCompletion}
-                          className="text-white bg-indigo-500 hover:border-2 hover:border-indigo-500 hover:bg-white hover:text-indigo-500 px-4 py-2 rounded-lg mb-3 ml-[-100px] mt-[-50px]"
+                          className="text-white bg-indigo-500 hover:border-2 hover:border-indigo-500 hover:bg-white hover:text-indigo-500 px-4 py-2 rounded-lg mb-3 mt-[20px]"
                         >
                           Completed
                         </button>

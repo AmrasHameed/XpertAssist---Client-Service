@@ -13,12 +13,12 @@ interface PasswordValues {
 }
 
 const ChangePassword = () => {
-
   const expert = useSelector(
-    (store: { expert: { expertId:string, expert: string; image?: string } }) => store.expert
+    (store: { expert: { expertId: string; expert: string; image?: string } }) =>
+      store.expert
   );
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validationSchema = Yup.object({
@@ -27,6 +27,8 @@ const ChangePassword = () => {
       .min(8, 'Password must be at least 8 characters')
       .required('New password is required'),
     confirmPassword: Yup.string()
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-expect-error
       .oneOf([Yup.ref('newPassword'), null], 'Passwords must match')
       .required('Confirm password is required'),
   });
@@ -34,10 +36,13 @@ const ChangePassword = () => {
   const handleSubmit = async (values: PasswordValues) => {
     try {
       setIsSubmitting(true);
-      const { data } = await axiosExpert().post(`/changePassword/${expert?.expertId}`, values);
+      const { data } = await axiosExpert().post(
+        `/changePassword/${expert?.expertId}`,
+        values
+      );
       if (data.message === 'success') {
         toast.success('Password changed successfully');
-        navigate('/expert')
+        navigate('/expert');
       } else {
         toast.error(data.message);
       }

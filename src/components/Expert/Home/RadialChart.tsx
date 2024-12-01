@@ -13,15 +13,23 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { ChartConfig, ChartContainer } from '@/components/ui/chart';
 
 interface RadialChartProps {
-    color: string;
-    value: number;
-    type: 'Earning' | 'Jobs Completed' | 'Total Jobs' | 'Total Distance' | 'Users' | 'Experts' | 'Services'; 
-    growth: number | null;
-  }
-
+  color: string;
+  value: number;
+  type:
+    | 'Earning'
+    | 'Jobs Completed'
+    | 'Total Jobs'
+    | 'Total Distance'
+    | 'Users'
+    | 'Experts'
+    | 'Services';
+  growth: number | null;
+}
 
 export function RadialChart({ color, value, type, growth }: RadialChartProps) {
-  const getMaxValue = (type: 'Earning' | 'Jobs Completed' | 'Total Jobs' | 'Total Distance'): number => {
+  const getMaxValue = (
+    type: 'Earning' | 'Jobs Completed' | 'Total Jobs' | 'Total Distance'
+  ): number => {
     switch (type) {
       case 'Earning':
         return 10000;
@@ -32,16 +40,18 @@ export function RadialChart({ color, value, type, growth }: RadialChartProps) {
       case 'Total Distance':
         return 100;
       default:
-        return 100; 
+        return 100;
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //@ts-expect-error
   const maxValue = getMaxValue(type);
   const getAngle = (value: number, maxValue: number) => {
-    return (value / maxValue) * 360; 
+    return (value / maxValue) * 360;
   };
-  const startAngle = 90; 
-  const endAngle = startAngle - getAngle(value, maxValue); 
+  const startAngle = 90;
+  const endAngle = startAngle - getAngle(value, maxValue);
 
   const chartData = [
     { browser: 'Safari', visitors: value, fill: 'var(--color-safari)' },

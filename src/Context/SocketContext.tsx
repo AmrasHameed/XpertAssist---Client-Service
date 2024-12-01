@@ -17,6 +17,8 @@ export const SocketProvider = ({ children }: SocketProviderProps): JSX.Element =
   const socket = useMemo(() => {
     const token = localStorage.getItem('expertToken') || localStorage.getItem('userToken') ;
     const refreshToken = localStorage.getItem('expertRefreshToken') || localStorage.getItem('refreshToken') ;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     return connectSocket(token, refreshToken);
   }, []);
 

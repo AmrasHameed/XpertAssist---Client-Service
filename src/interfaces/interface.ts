@@ -27,3 +27,32 @@ export type Service = {
   serviceImage: string;
   description: string;
 };
+
+export interface Expert {
+  message?: string;
+  id?: string;              
+  name?: string;
+  email?: string;
+  mobile?: number;
+  expertImage?: string;
+  service?: string;
+  password?: string;
+  accountStatus?: string;   
+  isVerified?: string;      
+  verificationDetails?: {
+    govIdType?: string;
+    govIdNumber?: string;
+    document?: string;
+  };
+  status?: string;
+  earnings?: Earning[];
+  totalEarning?: number;
+  createdAt?: Date;        
+  updatedAt?: Date;
+}
+
+interface Earning {
+  jobId: string;
+  earning: number;
+  type: string;
+}

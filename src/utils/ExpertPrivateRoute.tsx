@@ -44,9 +44,11 @@ const ExpertPrivateRoute = () => {
       </div>
     );
   }
+
   if (!loggedIn || isBlocked) {
     return <Navigate to={'/expert'} replace />;
   }
+  
   return <Outlet />;
 };
 

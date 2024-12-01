@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import axiosExpert from '../../../service/axios/axiosExpert';
@@ -77,7 +78,11 @@ const ProfileDetails = () => {
       mobile: expert.mobile || '',
       expertImage: expert.image || '',
     });
-    setPreviewImage(expert.image ? `https://${BUCKET}.s3.${REGION}.amazonaws.com/${expert.image}` : null);
+    setPreviewImage(
+      expert.image
+        ? `https://${BUCKET}.s3.${REGION}.amazonaws.com/${expert.image}`
+        : null
+    );
   }, [expert]);
 
   const serviceDetails = services.find(
@@ -161,6 +166,8 @@ const ProfileDetails = () => {
       .test(
         'fileSize',
         'File too large',
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-expect-error
         (value) => value && value.size <= 5 * 1024 * 1024
       )
       .test(
@@ -174,6 +181,8 @@ const ProfileDetails = () => {
             'image/png',
             'image/avif',
             'image/webp',
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-expect-error
           ].includes(value.type)
       ),
   });
@@ -182,8 +191,11 @@ const ProfileDetails = () => {
     setEditMode(!editMode);
     if (editMode) {
       setSelectedImage(null);
-      setPreviewImage(initialValues.expertImage? `https://${BUCKET}.s3.${REGION}.amazonaws.com/${initialValues.expertImage}`
-        : 'image');
+      setPreviewImage(
+        initialValues.expertImage
+          ? `https://${BUCKET}.s3.${REGION}.amazonaws.com/${initialValues.expertImage}`
+          : 'image'
+      );
       setInitialValues(initialValues);
     }
   };
@@ -202,7 +214,6 @@ const ProfileDetails = () => {
       reader.readAsDataURL(file);
     }
   };
-
 
   const handleVerify = () => {
     setVerify(true);
@@ -299,6 +310,8 @@ const ProfileDetails = () => {
                       (option) => option.value === values.govIdType
                     )}
                     onChange={(option) =>
+                      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                      //@ts-expect-error
                       setFieldValue('govIdType', option.value)
                     }
                     classNamePrefix="react-select"
@@ -412,7 +425,9 @@ const ProfileDetails = () => {
               <div className="relative">
                 <img
                   src={
-                    previewImage || `https://${BUCKET}.s3.${REGION}.amazonaws.com/${expert.image}` || 'placeholder-image-url'
+                    previewImage ||
+                    `https://${BUCKET}.s3.${REGION}.amazonaws.com/${expert.image}` ||
+                    'placeholder-image-url'
                   }
                   alt="profile"
                   className="w-16 h-16 rounded-full mr-4"

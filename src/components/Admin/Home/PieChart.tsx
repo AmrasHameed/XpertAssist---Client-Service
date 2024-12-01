@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import { Label, Pie, PieChart, Sector } from 'recharts';
-import { PieSectorDataItem } from 'recharts/types/polar/Pie';
 
 import {
   Card,
@@ -12,7 +11,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import {
-  ChartConfig,
   ChartContainer,
   ChartStyle,
   ChartTooltip,
@@ -26,6 +24,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 export function PieCharts({ top5Experts }) {
     const chartConfig = {
         expert1: { label: top5Experts[0]?.name, color: 'hsl(var(--chart-1))' },

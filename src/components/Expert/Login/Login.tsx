@@ -9,6 +9,8 @@ import { expertLogin } from '../../../service/redux/slices/expertAuthSlice';
 import axiosExpert from '../../../service/axios/axiosExpert';
 import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
+import { useState } from 'react';
+import { FaSpinner } from 'react-icons/fa';
 
 const validationSchema = Yup.object({
   email: Yup.string()
@@ -22,6 +24,7 @@ const validationSchema = Yup.object({
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [isLoading, SetIsLoading] = useState<boolean>(false)
   const formik = useFormik<LoginFormValues>({
     initialValues: {
       email: '',
@@ -30,6 +33,7 @@ const Login = () => {
     validationSchema,
     onSubmit: async (values) => {
       try {
+        SetIsLoading(true)
         await formHandleSubmit(values);
       } catch (err) {
         console.log(err);
@@ -56,17 +60,23 @@ const Login = () => {
           })
         );
         toast.success('Logged in Successfully');
+        SetIsLoading(false)
         navigate('/expert');
       } else if (data.message === 'UserNotFound') {
+        SetIsLoading(false)
         toast.error('User Not Found');
       } else if (data.message === 'passwordNotMatched') {
+        SetIsLoading(false)
         toast.error('Entered password is wrong');
       } else if (data.message === 'blocked') {
+        SetIsLoading(false)
         toast.info('Your Account is Blocked');
       } else {
+        SetIsLoading(false)
         toast.error('User is not Registered, Please Sign Up!');
       }
     } catch (error) {
+      SetIsLoading(false)
       console.log(error);
       toast.error((error as Error).message);
     }
@@ -173,9 +183,9 @@ const Login = () => {
       </div>
       <button
         type="submit"
-        className="w-full bg-black text-white p-2 rounded-lg hover:bg-gray-800"
+        className="w-full bg-black text-white p-2 rounded-lg hover:bg-gray-800 flex items-center justify-center"
       >
-        Sign in
+       {isLoading && <FaSpinner className="animate-spin mr-2" />} Sign in
       </button>
     </form>
 

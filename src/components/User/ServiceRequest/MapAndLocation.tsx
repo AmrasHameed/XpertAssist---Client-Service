@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef, useState } from 'react';
 import '../../../../OlaMapsWebSDK/OlaMapsWebSDK/style.css';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 import { OlaMaps } from '../../../../OlaMapsWebSDK/OlaMapsWebSDK/olamaps-js-sdk.es';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
@@ -71,14 +73,16 @@ const MapAndLocation = () => {
     setIsOpen(false);
   };
 
-  useEffect(()=>{
-    if(serviceId) {
-      const selectedService = services.find((service) => service._id === serviceId);
+  useEffect(() => {
+    if (serviceId) {
+      const selectedService = services.find(
+        (service) => service._id === serviceId
+      );
       if (selectedService) {
         formik.setFieldValue('service', selectedService._id);
       }
     }
-  },[serviceId, services])
+  }, [serviceId, services]);
 
   useEffect(() => {
     if (socket) {
@@ -520,6 +524,8 @@ const MapAndLocation = () => {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     value={formik.values.notes || ''}
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    //@ts-expect-error
                     rows="5"
                     className="block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   ></textarea>

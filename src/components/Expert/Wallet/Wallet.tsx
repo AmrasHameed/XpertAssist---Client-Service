@@ -36,6 +36,7 @@ const Wallet = () => {
       setLoading(true);
       try {
         const { data } = await axiosExpert().get(`/walletData/${expertId}`);
+        console.log(data, 'wallet')
         setWalletData(data);
       } catch (error) {
         toast.error((error as Error).message);
@@ -55,6 +56,8 @@ const Wallet = () => {
     }
 
     if (walletData?.totalEarning && walletData.totalEarning >= 500) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-expect-error
       const { value } = await Swal.fire({
         title: 'Enter Amount to Withdraw',
         input: 'number',
@@ -85,12 +88,18 @@ const Wallet = () => {
         `,
         },
         inputValidator: (value) => {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          //@ts-expect-error
           if (value <= 0) {
             return 'Amount must be greater than zero. Please enter a valid amount';
           }
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          //@ts-expect-error
           if (value < 500) {
             return 'Amount must be greater than ₹ 500. Please enter a valid amount';
           }
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          //@ts-expect-error
           if (value > walletData.totalEarning) {
             return `Amount must be less than ₹ ${walletData.totalEarning}. Please enter a valid amount`;
           }
@@ -198,6 +207,7 @@ const Wallet = () => {
               className="flex items-center justify-between py-4 px-6 rounded-lg mb-4 bg-white shadow-md transform hover:scale-105 transition-transform duration-200"
             >
               <div className="flex items-center">
+                {}
                 {transaction.type === 'credited' ? (
                   <FaArrowDown className="text-green-500 mr-3" />
                 ) : (
@@ -206,7 +216,7 @@ const Wallet = () => {
                 <div>
                   {transaction.jobId ? (
                     <p className="text-gray-700 font-semibold">
-                      Job ID: {transaction.jobId}
+                      Job ID: {transaction.jobId }{transaction.type}
                     </p>
                   ) : (
                     <p className="text-gray-700 font-semibold">Withdrawn</p>

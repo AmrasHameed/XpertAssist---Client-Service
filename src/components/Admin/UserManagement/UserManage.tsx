@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { axiosAdmin } from '../../../service/axios/axiosAdmin';
 import { toast } from 'react-toastify';
+import Loading from '@/utils/Loading';
 
 interface User {
   accountStatus: string;
@@ -11,18 +12,19 @@ interface User {
   userImage: string;
 }
 
-const BUCKET =  import.meta.env.VITE_AWS_S3_BUCKET;
-const REGION =  import.meta.env.VITE_AWS_S3_REGION;
-
+const BUCKET = import.meta.env.VITE_AWS_S3_BUCKET;
+const REGION = import.meta.env.VITE_AWS_S3_REGION;
 
 const UserManage = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [isLoading, SetIsLoading] = useState<boolean>(false)
   const usersPerPage = 5;
 
   const totalPages = Math.ceil(users.length / usersPerPage);
 
   useEffect(() => {
+    SetIsLoading(true)
     fetchUserData();
   }, [currentPage]);
 
@@ -31,30 +33,38 @@ const UserManage = () => {
       const { data } = await axiosAdmin().get('/getUsers');
       console.log(data);
       if (data) {
+        SetIsLoading(false)
         setUsers(data);
       } else {
+        SetIsLoading(false)
         toast.error('No Users Found');
       }
     } catch (error) {
+      SetIsLoading(false)
       toast.error((error as Error).message);
     }
   };
 
-  const handleBlockUnblock = async (userId: string, currentStatus: 'Blocked' | 'UnBlocked') => {
+  const handleBlockUnblock = async (
+    userId: string,
+    currentStatus: 'Blocked' | 'UnBlocked'
+  ) => {
     try {
       const newStatus = currentStatus === 'UnBlocked' ? 'Blocked' : 'UnBlocked';
-      const {data} = await axiosAdmin().patch(`/users/${userId}/block-unblock`, { accountStatus: newStatus });
-      if(data.message === 'success') {
+      const { data } = await axiosAdmin().patch(
+        `/users/${userId}/block-unblock`,
+        { accountStatus: newStatus }
+      );
+      if (data.message === 'success') {
         toast.success(`User has been ${newStatus.toLowerCase()} successfully!`);
         fetchUserData();
       } else {
-        toast.error(data.message)
+        toast.error(data.message);
       }
     } catch (error) {
       toast.error((error as Error).message);
     }
   };
-  
 
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
@@ -69,6 +79,7 @@ const UserManage = () => {
   return (
     <div>
       {users.length === 0 ? (
+         isLoading?<Loading/>:
         <div>
           <h1 className="flex justify-center items-center text-grey-800 text-3xl pt-3 mt-7">
             Users List is Empty
@@ -111,7 +122,11 @@ const UserManage = () => {
                       >
                         {user.userImage && (
                           <img
-                            src={user.userImage?`https://${BUCKET}.s3.${REGION}.amazonaws.com/${user.userImage}`:'image'}
+                            src={
+                              user.userImage
+                                ? `https://${BUCKET}.s3.${REGION}.amazonaws.com/${user.userImage}`
+                                : 'image'
+                            }
                             alt="user"
                             className="w-10 h-10 rounded-full border-2 border-black"
                           />
@@ -129,6 +144,8 @@ const UserManage = () => {
                       <td className="px-8 py-4">
                         <button
                           onClick={() =>
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            //@ts-expect-error
                             handleBlockUnblock(user._id, user.accountStatus)
                           }
                           className={`w-20 p-1 rounded-md ${

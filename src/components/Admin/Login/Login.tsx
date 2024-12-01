@@ -7,6 +7,8 @@ import { useDispatch } from 'react-redux';
 import { LoginFormValues } from '../../../interfaces/interface';
 import {axiosAdmin} from '../../../service/axios/axiosAdmin';
 import { adminLogin } from '../../../service/redux/slices/adminAuthSlice';
+import { useState } from 'react';
+import { FaSpinner } from 'react-icons/fa';
 
 const validationSchema = Yup.object({
   email: Yup.string()
@@ -20,6 +22,7 @@ const validationSchema = Yup.object({
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [isLoading, SetIsLoading] = useState<boolean>(false)
   const formik = useFormik<LoginFormValues>({
     initialValues: {
       email: '',
@@ -28,8 +31,10 @@ const Login = () => {
     validationSchema,
     onSubmit: async (values) => {
       try {
+        SetIsLoading(true)
         await formHandleSubmit(values);
       } catch (err) {
+        SetIsLoading(false)
         console.log(err);
       }
     },
@@ -43,13 +48,17 @@ const Login = () => {
         localStorage.setItem('adminToken', data.token);
         dispatch(adminLogin({ name: data.name, loggedIn: true }));
         toast.success('Admin Logged in Successfully');
+        SetIsLoading(false)
         navigate('/admin/dashboard');
       } else if (data.message === 'Invalid Credentials') {
+        SetIsLoading(false)
         toast.error('Invalid Credentials');
       } else {
+        SetIsLoading(false)
         toast.error('Something went wrong');
       }
     } catch (error) {
+      SetIsLoading(false)
       console.log(error);
       toast.error((error as Error).message);
     }
@@ -110,9 +119,9 @@ const Login = () => {
           </div>
           <button
             type="submit"
-            className="w-full bg-black text-white p-2 rounded-lg hover:bg-gray-800"
+            className="w-full bg-black text-white p-2 rounded-lg hover:bg-gray-800 flex items-center justify-center"
           >
-            Sign in
+            {isLoading && <FaSpinner className="animate-spin mr-2" />} Sign in
           </button>
         </form>
       </div>

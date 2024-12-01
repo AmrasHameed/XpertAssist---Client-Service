@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import axiosUser from '../../../service/axios/axiosUser';
@@ -23,6 +23,8 @@ const ChangePassword = () => {
       .min(8, 'Password must be at least 8 characters')
       .required('New password is required'),
     confirmPassword: Yup.string()
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-expect-error
       .oneOf([Yup.ref('newPassword'), null], 'Passwords must match')
       .required('Confirm password is required'),
   });

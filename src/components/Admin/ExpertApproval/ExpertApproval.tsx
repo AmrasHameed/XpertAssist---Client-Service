@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { axiosAdmin } from '../../../service/axios/axiosAdmin';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
+import Loading from '@/utils/Loading';
 
 interface Expert {
   _id: string;
@@ -21,13 +22,14 @@ interface VerificationDetails {
 
 const ExpertApproval = () => {
   const [experts, setExperts] = useState<Expert[]>([]);
-
+  const [isLoading, SetIsLoading] = useState<boolean>(false)
   const [currentPage, setCurrentPage] = useState<number>(1);
   const expertsPerPage = 5;
 
   const totalPages = Math.ceil(experts.length / expertsPerPage);
 
   useEffect(() => {
+    SetIsLoading(true)
     fetchExpertData();
   }, [currentPage]);
 
@@ -43,11 +45,14 @@ const ExpertApproval = () => {
   
         if (filteredExperts.length > 0) {
           setExperts(filteredExperts);
+          SetIsLoading(false)
         } 
       } else {
+        SetIsLoading(false)
         toast.error('No Experts Found');
       }
     } catch (error) {
+      SetIsLoading(false)
       toast.error((error as Error).message);
     }
   };
@@ -65,6 +70,7 @@ const ExpertApproval = () => {
   return (
     <div>
       {experts.length === 0 ? (
+        isLoading?<Loading/>:
         <div>
           <h1 className="flex justify-center items-center text-grey-800 text-3xl pt-3 mt-7">
             Experts List is Empty

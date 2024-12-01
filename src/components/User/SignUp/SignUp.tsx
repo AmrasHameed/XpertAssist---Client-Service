@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Player } from '@lottiefiles/react-lottie-player';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -8,12 +9,15 @@ import { toast } from 'react-toastify';
 import { SignupData } from '../../../interfaces/interface';
 import { useDispatch } from 'react-redux';
 import { userLogin } from '../../../service/redux/slices/userAuthSlice';
+import { FaSpinner } from 'react-icons/fa';
 
 const SignUp = () => {
   const [otp, setOtp] = useState<string[]>(new Array(4).fill(''));
   const [otpPage, setOtpPage] = useState<boolean | null>(null);
   const [timeLeft, setTimeLeft] = useState<number>(30);
   const [, setIsResendVisible] = useState<boolean>(false);
+  const [isLoading, SetIsLoading] = useState<boolean>(false)
+
 
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
@@ -37,12 +41,15 @@ const SignUp = () => {
     }
   };
 
-  const handleResend = async() => {
+  const handleResend = async () => {
     setOtp(new Array(4).fill(''));
     setTimeLeft(30);
     setIsResendVisible(false);
     try {
-      const { data } = await axiosUser().post('/resendOtp', { email:formik.values.email, name: formik.values.name });
+      const { data } = await axiosUser().post('/resendOtp', {
+        email: formik.values.email,
+        name: formik.values.name,
+      });
       if (data.message === 'OTP sent') {
         toast.success('OTP sent Successfully');
         setOtpPage(true);
@@ -60,6 +67,7 @@ const SignUp = () => {
   ) => {
     try {
       event.preventDefault();
+      SetIsLoading(true)
       const otpCode = otp.join('');
       const formData = new FormData();
       formData.append('name', formik.values.name);
@@ -89,15 +97,20 @@ const SignUp = () => {
           })
         );
         toast.success('User registered successfully');
+        SetIsLoading(false)
         navigate('/');
       } else if (data.message === 'UserExist') {
+        SetIsLoading(false)
         toast.error('User Already Exists');
       } else if (data.message === 'OTP does not match or is not found.') {
+        SetIsLoading(false)
         toast.error('OTP does not match or is not found.');
       } else {
+        SetIsLoading(false)
         toast.error('User is not Registered, Please Sign Up!');
       }
     } catch (error) {
+      SetIsLoading(false)
       toast.error((error as Error).message);
     }
   };
@@ -142,6 +155,8 @@ const SignUp = () => {
       .test(
         'fileSize',
         'File too large',
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
         (value) => value && value.size <= 5 * 1024 * 1024
       ) // 2MB limit
       .test(
@@ -155,11 +170,15 @@ const SignUp = () => {
             'image/png',
             'image/avif',
             'image/webp',
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
           ].includes(value.type)
       ),
   });
 
   const formik = useFormik<SignupData>({
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     initialValues: {
       name: '',
       email: '',
@@ -171,8 +190,10 @@ const SignUp = () => {
     validationSchema,
     onSubmit: async (values: SignupData) => {
       try {
+        SetIsLoading(true)
         await signupOtp(values.email, values.name);
       } catch (err: unknown) {
+        SetIsLoading(false)
         if (err instanceof Error) {
           console.log(err.message);
         } else {
@@ -186,261 +207,284 @@ const SignUp = () => {
     try {
       const { data } = await axiosUser().post('/signupOtp', { email, name });
       if (data.message === 'UserExist') {
+        SetIsLoading(false)
         toast.error('User Already Exists');
-      } else if(data.message === 'Failed to send OTP.') {
+      } else if (data.message === 'Failed to send OTP.') {
+        SetIsLoading(false)
         toast.error('Failed to send OTP.');
       } else {
         toast.success('OTP sent Successfully');
+        SetIsLoading(false)
         setOtpPage(true);
       }
     } catch (error) {
+      SetIsLoading(false)
       toast.error((error as Error).message);
     }
   };
 
   return (
     <div>
-  {otpPage ? (
-    <div className="min-h-screen flex flex-col md:flex-row items-center justify-between px-4 md:px-10">
-      {/* Left side - OTP Form */}
-      <div className="w-full md:w-1/2 space-y-4 md:space-y-0 md:mr-4">
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="w-full max-w-md p-8 space-y-4 bg-white shadow-lg rounded-md">
-            <h1 className="text-2xl font-semibold text-center">Verify OTP</h1>
+      {otpPage ? (
+        <div className="min-h-screen flex flex-col md:flex-row items-center justify-between px-4 md:px-10">
+          {/* Left side - OTP Form */}
+          <div className="w-full md:w-1/2 space-y-4 md:space-y-0 md:mr-4">
+            <div className="min-h-screen flex items-center justify-center">
+              <div className="w-full max-w-md p-8 space-y-4 bg-white shadow-lg rounded-md">
+                <h1 className="text-2xl font-semibold text-center">
+                  Verify OTP
+                </h1>
 
-            {/* OTP Input Fields */}
-            <div className="flex justify-center space-x-2">
-              {otp.map((data, index) => (
-                <input
-                  key={index}
-                  type="text"
-                  maxLength="1"
-                  className="w-12 h-12 text-center border rounded text-lg focus:outline-none focus:ring-2 focus:ring-black"
-                  value={data}
-                  onChange={(e) => handleChange(e.target, index)}
-                  onFocus={(e) => e.target.select()}
-                />
-              ))}
-            </div>
+                {/* OTP Input Fields */}
+                <div className="flex justify-center space-x-2">
+                  {otp.map((data, index) => (
+                    <input
+                      key={index}
+                      type="text"
+                      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                      // @ts-expect-error
+                      maxLength="1"
+                      className="w-12 h-12 text-center border rounded text-lg focus:outline-none focus:ring-2 focus:ring-black"
+                      value={data}
+                      onChange={(e) => handleChange(e.target, index)}
+                      onFocus={(e) => e.target.select()}
+                    />
+                  ))}
+                </div>
 
-            {/* Timer or Resend OTP */}
-            <div className="text-center mt-4">
-              {timeLeft > 0 ? (
-                <p className="text-gray-600">Resend OTP in {timeLeft} seconds</p>
-              ) : (
+                {/* Timer or Resend OTP */}
+                <div className="text-center mt-4">
+                  {timeLeft > 0 ? (
+                    <p className="text-gray-600">
+                      Resend OTP in {timeLeft} seconds
+                    </p>
+                  ) : (
+                    <button
+                      onClick={handleResend}
+                      className="text-blue-500 font-semibold hover:underline"
+                    >
+                      Resend OTP
+                    </button>
+                  )}
+                </div>
+
+                {/* Verify Button */}
                 <button
-                  onClick={handleResend}
-                  className="text-blue-500 font-semibold hover:underline"
+                  onClick={handleVerify}
+                  className="w-full py-2 mt-4 bg-black text-white rounded hover:bg-gray-800 flex items-center justify-center"
                 >
-                  Resend OTP
+                 {isLoading && <FaSpinner className="animate-spin mr-2" />} Verify
                 </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Right side - Lottie Animation */}
+          <div className="hidden md:flex w-full md:w-1/2 justify-center items-center mt-0 md:mt-0">
+            <Player
+              autoplay
+              loop
+              src="/Animation - 1726125252610.json"
+              style={{ height: '300px', width: '300px' }}
+            />
+          </div>
+        </div>
+      ) : (
+        <div className="min-h-screen flex flex-col md:flex-row items-center justify-between px-4 md:px-10">
+          {/* Left side - Signup Form */}
+          <div className="w-full md:w-1/2 space-y-4 md:space-y-0 md:mr-4">
+            <h1 className="text-3xl font-garamond text-center md:text-left">
+              X P E R T A S S I S T
+            </h1>
+            <h2 className="text-xl font-semibold text-center md:text-left">
+              User Sign Up
+            </h2>
+
+            <form onSubmit={formik.handleSubmit}>
+              {/* Name Field */}
+              <div className="relative mb-4 mt-3">
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formik.values.name}
+                  onChange={formik.handleChange}
+                  className="peer w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black placeholder-transparent"
+                  placeholder="Name"
+                />
+                <label
+                  htmlFor="name"
+                  className="absolute left-2 -top-3.5 text-sm text-gray-600 bg-white px-1 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:left-2 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:-top-3.5 peer-focus:left-2 peer-focus:text-sm peer-focus:text-gray-600"
+                >
+                  Name
+                </label>
+                {formik.errors.name && formik.touched.name && (
+                  <div className="text-red-600 text-sm">
+                    {formik.errors.name}
+                  </div>
+                )}
+              </div>
+
+              {/* Email Field */}
+              <div className="relative mb-4">
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formik.values.email}
+                  onChange={formik.handleChange}
+                  className="peer w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black placeholder-transparent"
+                  placeholder="Email"
+                />
+                <label
+                  htmlFor="email"
+                  className="absolute left-2 -top-3.5 text-sm text-gray-600 bg-white px-1 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:left-2 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:-top-3.5 peer-focus:left-2 peer-focus:text-sm peer-focus:text-gray-600"
+                >
+                  Email
+                </label>
+                {formik.errors.email && formik.touched.email && (
+                  <div className="text-red-600 text-sm">
+                    {formik.errors.email}
+                  </div>
+                )}
+              </div>
+
+              {/* Mobile Number Field */}
+              <div className="relative mb-4">
+                <input
+                  type="tel"
+                  id="mobile"
+                  name="mobile"
+                  value={formik.values.mobile}
+                  onChange={formik.handleChange}
+                  className="peer w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black placeholder-transparent"
+                  placeholder="Mobile Number"
+                />
+                <label
+                  htmlFor="mobile"
+                  className="absolute left-2 -top-3.5 text-sm text-gray-600 bg-white px-1 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:left-2 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:-top-3.5 peer-focus:left-2 peer-focus:text-sm peer-focus:text-gray-600"
+                >
+                  Mobile Number
+                </label>
+                {formik.errors.mobile && formik.touched.mobile && (
+                  <div className="text-red-600 text-sm">
+                    {formik.errors.mobile}
+                  </div>
+                )}
+              </div>
+
+              {/* Profile Image Field */}
+              <div className="relative mb-4">
+                <input
+                  type="file"
+                  id="image"
+                  name="image"
+                  onChange={(e) =>
+                    handleFileChange(e, 'image', setImageUrl, formik)
+                  }
+                  className="peer w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black"
+                />
+                <label
+                  htmlFor="image"
+                  className="absolute left-2 -top-3.5 text-sm text-gray-600 bg-white px-1 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:left-2 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:-top-3.5 peer-focus:left-2 peer-focus:text-sm peer-focus:text-gray-600"
+                >
+                  Profile Image
+                </label>
+                {formik.errors.image && formik.touched.image && (
+                  <div className="text-red-600 text-sm">
+                    {formik.errors.image}
+                  </div>
+                )}
+              </div>
+
+              {imageUrl && (
+                <div className="mb-4">
+                  <img
+                    src={imageUrl}
+                    alt="Preview"
+                    className="w-32 h-32 object-cover"
+                  />
+                </div>
               )}
-            </div>
 
-            {/* Verify Button */}
-            <button
-              onClick={handleVerify}
-              className="w-full py-2 mt-4 bg-black text-white rounded hover:bg-gray-800"
-            >
-              Verify
-            </button>
-          </div>
-        </div> 
-      </div>
+              {/* Password Field */}
+              <div className="relative mb-4">
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  value={formik.values.password}
+                  onChange={formik.handleChange}
+                  className="peer w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black placeholder-transparent"
+                  placeholder="Password"
+                />
+                <label
+                  htmlFor="password"
+                  className="absolute left-2 -top-3.5 text-sm text-gray-600 bg-white px-1 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:left-2 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:-top-3.5 peer-focus:left-2 peer-focus:text-sm peer-focus:text-gray-600"
+                >
+                  Password
+                </label>
+                {formik.errors.password && formik.touched.password && (
+                  <div className="text-red-600 text-sm">
+                    {formik.errors.password}
+                  </div>
+                )}
+              </div>
 
-      {/* Right side - Lottie Animation */}
-      <div className="hidden md:flex w-full md:w-1/2 justify-center items-center mt-0 md:mt-0">
-        <Player
-          autoplay
-          loop
-          src="/Animation - 1726125252610.json"
-          style={{ height: '300px', width: '300px' }}
-        />
-      </div>
-    </div>
-  ) : (
-    <div className="min-h-screen flex flex-col md:flex-row items-center justify-between px-4 md:px-10">
-      {/* Left side - Signup Form */}
-      <div className="w-full md:w-1/2 space-y-4 md:space-y-0 md:mr-4">
-        <h1 className="text-3xl font-garamond text-center md:text-left">X P E R T A S S I S T</h1>
-        <h2 className="text-xl font-semibold text-center md:text-left">User Sign Up</h2>
+              {/* Confirm Password Field */}
+              <div className="relative mb-4">
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  value={formik.values.confirmPassword}
+                  onChange={formik.handleChange}
+                  className="peer w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black placeholder-transparent"
+                  placeholder="Confirm Password"
+                />
+                <label
+                  htmlFor="confirmPassword"
+                  className="absolute left-2 -top-3.5 text-sm text-gray-600 bg-white px-1 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:left-2 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:-top-3.5 peer-focus:left-2 peer-focus:text-sm peer-focus:text-gray-600"
+                >
+                  Confirm Password
+                </label>
+                {formik.errors.confirmPassword &&
+                  formik.touched.confirmPassword && (
+                    <div className="text-red-600 text-sm">
+                      {formik.errors.confirmPassword}
+                    </div>
+                  )}
+              </div>
 
-        <form onSubmit={formik.handleSubmit}>
-          {/* Name Field */}
-          <div className="relative mb-4 mt-3">
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formik.values.name}
-              onChange={formik.handleChange}
-              className="peer w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black placeholder-transparent"
-              placeholder="Name"
-            />
-            <label
-              htmlFor="name"
-              className="absolute left-2 -top-3.5 text-sm text-gray-600 bg-white px-1 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:left-2 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:-top-3.5 peer-focus:left-2 peer-focus:text-sm peer-focus:text-gray-600"
-            >
-              Name
-            </label>
-            {formik.errors.name && formik.touched.name && (
-              <div className="text-red-600 text-sm">{formik.errors.name}</div>
-            )}
-          </div>
+              <p className=" text-center text-gray-600 text-md">
+                Already have an account?{' '}
+                <Link to={'/login'} className="text-blue-500 font-semibold">
+                  Log in
+                </Link>
+              </p>
 
-          {/* Email Field */}
-          <div className="relative mb-4">
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formik.values.email}
-              onChange={formik.handleChange}
-              className="peer w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black placeholder-transparent"
-              placeholder="Email"
-            />
-            <label
-              htmlFor="email"
-              className="absolute left-2 -top-3.5 text-sm text-gray-600 bg-white px-1 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:left-2 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:-top-3.5 peer-focus:left-2 peer-focus:text-sm peer-focus:text-gray-600"
-            >
-              Email
-            </label>
-            {formik.errors.email && formik.touched.email && (
-              <div className="text-red-600 text-sm">{formik.errors.email}</div>
-            )}
-          </div>
-
-          {/* Mobile Number Field */}
-          <div className="relative mb-4">
-            <input
-              type="tel"
-              id="mobile"
-              name="mobile"
-              value={formik.values.mobile}
-              onChange={formik.handleChange}
-              className="peer w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black placeholder-transparent"
-              placeholder="Mobile Number"
-            />
-            <label
-              htmlFor="mobile"
-              className="absolute left-2 -top-3.5 text-sm text-gray-600 bg-white px-1 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:left-2 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:-top-3.5 peer-focus:left-2 peer-focus:text-sm peer-focus:text-gray-600"
-            >
-              Mobile Number
-            </label>
-            {formik.errors.mobile && formik.touched.mobile && (
-              <div className="text-red-600 text-sm">{formik.errors.mobile}</div>
-            )}
-          </div>
-
-          {/* Profile Image Field */}
-          <div className="relative mb-4">
-            <input
-              type="file"
-              id="image"
-              name="image"
-              onChange={(e) =>
-                handleFileChange(e, 'image', setImageUrl, formik)
-              }
-              className="peer w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black"
-            />
-            <label
-              htmlFor="image"
-              className="absolute left-2 -top-3.5 text-sm text-gray-600 bg-white px-1 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:left-2 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:-top-3.5 peer-focus:left-2 peer-focus:text-sm peer-focus:text-gray-600"
-            >
-              Profile Image
-            </label>
-            {formik.errors.image && formik.touched.image && (
-              <div className="text-red-600 text-sm">{formik.errors.image}</div>
-            )}
-          </div>
-
-          {imageUrl && (
-            <div className="mb-4">
-              <img
-                src={imageUrl}
-                alt="Preview"
-                className="w-32 h-32 object-cover"
-              />
-            </div>
-          )}
-
-          {/* Password Field */}
-          <div className="relative mb-4">
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formik.values.password}
-              onChange={formik.handleChange}
-              className="peer w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black placeholder-transparent"
-              placeholder="Password"
-            />
-            <label
-              htmlFor="password"
-              className="absolute left-2 -top-3.5 text-sm text-gray-600 bg-white px-1 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:left-2 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:-top-3.5 peer-focus:left-2 peer-focus:text-sm peer-focus:text-gray-600"
-            >
-              Password
-            </label>
-            {formik.errors.password && formik.touched.password && (
-              <div className="text-red-600 text-sm">{formik.errors.password}</div>
-            )}
-          </div>
-
-          {/* Confirm Password Field */}
-          <div className="relative mb-4">
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              value={formik.values.confirmPassword}
-              onChange={formik.handleChange}
-              className="peer w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black placeholder-transparent"
-              placeholder="Confirm Password"
-            />
-            <label
-              htmlFor="confirmPassword"
-              className="absolute left-2 -top-3.5 text-sm text-gray-600 bg-white px-1 transition-all peer-placeholder-shown:top-2 peer-placeholder-shown:left-2 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:-top-3.5 peer-focus:left-2 peer-focus:text-sm peer-focus:text-gray-600"
-            >
-              Confirm Password
-            </label>
-            {formik.errors.confirmPassword && formik.touched.confirmPassword && (
-              <div className="text-red-600 text-sm">{formik.errors.confirmPassword}</div>
-            )}
-          </div>
-
-          <p className=" text-center text-gray-600 text-md">
-              Already have an account?{' '}
-              <Link
-                to={'/login'}
-                className="text-blue-500 font-semibold"
+              {/* Submit Button */}
+              <button
+                type="submit"
+                className="w-full py-2 bg-black text-white rounded mt-4 hover:bg-gray-800 flex items-center justify-center"
               >
-                Log in
-              </Link>
-            </p>
+                {isLoading && <FaSpinner className="animate-spin mr-2" />} Sign Up
+              </button>
+            </form>
+          </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full py-2 bg-black text-white rounded mt-4 hover:bg-gray-800"
-          >
-            Sign Up
-          </button>
-        </form>
-      </div>
-
-      {/* Right side - Lottie Animation */}
-      <div className="w-full md:w-1/2 flex justify-center items-center mt-8 md:mt-0">
-        <Player
-          autoplay
-          loop
-          src="/Animation - 1726125252610.json"
-          style={{ height: '300px', width: '300px' }}
-        />
-      </div>
+          {/* Right side - Lottie Animation */}
+          <div className="w-full md:w-1/2 flex justify-center items-center mt-8 md:mt-0">
+            <Player
+              autoplay
+              loop
+              src="/Animation - 1726125252610.json"
+              style={{ height: '300px', width: '300px' }}
+            />
+          </div>
+        </div>
+      )}
     </div>
-  )}
-</div>
-
   );
 };
 

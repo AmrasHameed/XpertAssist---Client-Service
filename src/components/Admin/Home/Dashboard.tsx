@@ -2,7 +2,7 @@ import { RadialChart } from '@/components/Expert/Home/RadialChart';
 import { axiosAdmin } from '@/service/axios/axiosAdmin';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { PieChart, PieCharts } from './PieChart';
+import { PieCharts } from './PieChart';
 import { RadarCharts } from './RadarChart';
 
 interface Expert {

@@ -5,13 +5,15 @@ import axiosUser from '../../../service/axios/axiosUser';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import NewPassword from './NewPassword';
-import * as Yup from 'yup'; 
+import * as Yup from 'yup';
+import { FaSpinner } from 'react-icons/fa';
 
 const ForgotPassword = () => {
   const [otp, setOtp] = useState<string[]>(new Array(4).fill(''));
   const [otpPage, setOtpPage] = useState<boolean | null>(null);
   const [timeLeft, setTimeLeft] = useState<number>(30);
-  const [showNewPassword, setShowNewPassword] = useState<boolean>(false); // New state to control the new password visibility
+  const [showNewPassword, setShowNewPassword] = useState<boolean>(false);
+  const [isLoading, SetIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
@@ -38,6 +40,7 @@ const ForgotPassword = () => {
   ) => {
     try {
       event.preventDefault();
+      SetIsLoading(true);
       const otpCode = otp.join('');
       const formData = new FormData();
       formData.append('email', formik.values.email);
@@ -45,11 +48,14 @@ const ForgotPassword = () => {
       const { data } = await axiosUser().post('/otpVerify', formData);
       if (data.message === 'success') {
         toast.success('OTP matched Successfully');
+        SetIsLoading(false);
         setShowNewPassword(true);
       } else {
+        SetIsLoading(false);
         toast.error(data.message);
       }
     } catch (error) {
+      SetIsLoading(false);
       toast.error((error as Error).message);
     }
   };
@@ -86,8 +92,10 @@ const ForgotPassword = () => {
     validationSchema,
     onSubmit: async (values) => {
       try {
+        SetIsLoading(true);
         await forgotOtp(values.email);
       } catch (err: unknown) {
+        SetIsLoading(false);
         if (err instanceof Error) {
           console.log(err.message);
         } else {
@@ -102,11 +110,14 @@ const ForgotPassword = () => {
       const { data } = await axiosUser().post('/forgotPassOtp', { email });
       if (data.message === 'OTP sent') {
         toast.success('OTP sent Successfully');
+        SetIsLoading(false);
         setOtpPage(true);
       } else {
+        SetIsLoading(false);
         toast.error(data.message);
       }
     } catch (error) {
+      SetIsLoading(false);
       toast.error((error as Error).message);
     }
   };
@@ -128,6 +139,8 @@ const ForgotPassword = () => {
                     <input
                       key={index}
                       type="text"
+                      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                      //@ts-expect-error
                       maxLength="1"
                       className="w-12 h-12 text-center border rounded text-lg focus:outline-none focus:ring-2 focus:ring-black"
                       value={data}
@@ -154,8 +167,9 @@ const ForgotPassword = () => {
                 </div>
                 <button
                   onClick={handleVerify}
-                  className="w-full py-2 mt-4 bg-black text-white rounded hover:bg-gray-800"
+                  className="w-full py-2 mt-4 bg-black text-white rounded hover:bg-gray-800 flex items-center justify-center"
                 >
+                  {isLoading && <FaSpinner className="animate-spin mr-2" />}{' '}
                   Verify
                 </button>
               </div>
@@ -210,9 +224,10 @@ const ForgotPassword = () => {
 
               <button
                 type="submit"
-                className="w-full bg-black text-white p-2 rounded-lg hover:bg-gray-800"
+                className="w-full bg-black text-white p-2 rounded-lg hover:bg-gray-800 flex items-center justify-center"
               >
-                Send OTP
+                {isLoading && <FaSpinner className="animate-spin mr-2" />} Send
+                OTP
               </button>
             </form>
 

@@ -4,6 +4,7 @@ import { axiosAdmin } from '../../../service/axios/axiosAdmin';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 import 'animate.css';
+import Loading from '@/utils/Loading';
 
 type Service = {
   _id: string;
@@ -20,11 +21,14 @@ const REGION =  import.meta.env.VITE_AWS_S3_REGION;
 const ServiceManage = () => {
   const [services, setServices] = useState<Service[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [isLoading, SetIsLoading] = useState<boolean>(false)
+
   const servicesPerPage = 5;
 
   const totalPages = Math.ceil(services.length / servicesPerPage);
 
   useEffect(() => {
+    SetIsLoading(true)
     fetchServiceData();
   }, [currentPage]);
 
@@ -33,11 +37,14 @@ const ServiceManage = () => {
     try {
       const { data } = await axiosAdmin().get('/getServices');
       if (data) {
+        SetIsLoading(false)
         setServices(data);
       } else {
+        SetIsLoading(false)
         toast.error('No Services Found');
       }
     } catch (error) {
+      SetIsLoading(false)
       toast.error((error as Error).message);
     }
   };
@@ -101,6 +108,7 @@ const ServiceManage = () => {
   return (
     <div>
       {services.length === 0 ? (
+        isLoading?<Loading/>:
         <div>
           <h1 className="flex justify-center items-center text-grey-800 text-2xl pt-3 mt-7">
             Service List is Empty
@@ -149,7 +157,7 @@ const ServiceManage = () => {
               <tbody className="text-center font-medium whitespace-nowrap text-white">
                 {currentServices.map((service, index) => (
                   <tr
-                    key={service.id || index}
+                    key={service._id || index}
                     className="bg-gray-100 border-white text-gray-900 hover:bg-gray-900 hover:text-white"
                   >
                     <td scope="row" className="px-10 py-3">

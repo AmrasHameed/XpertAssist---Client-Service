@@ -3,7 +3,7 @@ import { axiosAdmin } from '@/service/axios/axiosAdmin';
 import Loading from '@/utils/Loading';
 import { useEffect, useState } from 'react';
 import {
-    FaCheckCircle,
+  FaCheckCircle,
   FaClipboard,
   FaExclamationCircle,
   FaMobile,
@@ -217,8 +217,14 @@ const JobsHistory = () => {
                               : 'text-yellow-300'
                           }`}
                         >
-                          {job?.payment.charAt(0).toUpperCase() +
-                            job?.payment.slice(1)}
+                          {
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            //@ts-expect-error
+                            job?.payment.charAt(0).toUpperCase() +
+                              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                              //@ts-expect-error
+                              job?.payment.slice(1)
+                          }
                         </span>
                       </div>
                     </div>

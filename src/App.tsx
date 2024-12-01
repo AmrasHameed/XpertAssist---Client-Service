@@ -37,7 +37,6 @@ import { Service } from './interfaces/interface';
 import ServiceRequestModal from './components/Expert/Home/ServiceRequestModal';
 import { RootState } from './service/redux/store';
 import JobPaymentPage from './pages/user/JobPaymentPage';
-import PaymentSuccessPage from './pages/user/PaymentSuccessPage';
 import AdminJobsPage from './pages/admin/AdminJobsPage';
 
 function App() {

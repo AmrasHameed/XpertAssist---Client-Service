@@ -59,6 +59,8 @@ const CurrentJob: React.FC = () => {
   );
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-expect-error
     const handleUserMessage = (data) => {
       console.log(data);
       dispatch(addMessage(data.message));
@@ -70,6 +72,8 @@ const CurrentJob: React.FC = () => {
         localStorage.setItem('userToken', token);
         localStorage.setItem('refreshToken', refreshToken);
       });
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-expect-error
       socket.on('start-job', (expertId, userId) => {
         setIsJobActive(true);
         localStorage.setItem('isJobActive', 'true');
@@ -158,161 +162,150 @@ const CurrentJob: React.FC = () => {
     <div>
       <Navbar activePage="job-status" />
       {jobData && expertData ? (
-        <div>
-          <div className="flex justify-center items-center relative z-30 h-full">
-            <div className="w-full max-w-3xl bg-white p-6 border-gray-200 m-2">
-              <h3 className="text-2xl font-bold mb-6 text-center text-indigo-600 p-2 m-2">
-                Congratulations! You’ve Been Assigned an Expert
-              </h3>
+        <div className="flex flex-col items-center relative z-30 h-full p-4">
+          <div className="w-full max-w-3xl bg-white p-6 border-gray-200 m-2">
+            <h3 className="text-2xl font-bold mb-6 text-center text-indigo-600 p-2 m-2">
+              Congratulations! You’ve Been Assigned an Expert
+            </h3>
 
-              <div className="flex justify-between items-start mb-4">
-                <div className="flex flex-col items-start space-x-32">
-                  <div className="flex items-center">
-                    <img
-                      src={`https://${BUCKET}.s3.${REGION}.amazonaws.com/${expertData?.expertImage}`}
-                      alt="Expert"
-                      className="w-28 h-28 rounded-full object-cover mr-4 border-2 border-indigo-500"
-                    />
-                    <div className="space-y-1">
-                      <p className="text-gray-800 text-lg font-semibold flex items-center">
-                        Name: {expertData?.name}
-                        {expertData?.isVerified && (
-                          <span className="material-symbols-outlined font-extrabold p-1 text-green-500 ml-1">
-                            check_circle
-                          </span>
-                        )}
-                      </p>
-                      <p className="text-gray-700">
-                        Email: {expertData?.email}
-                      </p>
-                      <p className="text-gray-700">
-                        Mobile: {expertData?.mobile}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="-mt-1">
-                    <button
-                      onClick={startVideoCall}
-                      className="text-white bg-indigo-500 hover:border-2 hover:border-indigo-500 hover:bg-white hover:text-indigo-500 px-4 py-2 rounded-lg flex items-center justify-center"
-                    >
-                      <span className="material-symbols-outlined mr-2">
-                        video_call
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 space-y-4 md:space-y-0">
+              <div className="flex items-start space-x-4 md:space-x-8">
+                <img
+                  src={`https://${BUCKET}.s3.${REGION}.amazonaws.com/${expertData?.expertImage}`}
+                  alt="Expert"
+                  className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full object-cover border-2 border-indigo-500"
+                />
+                <div className="space-y-2">
+                  <p className="text-gray-800 text-lg font-semibold flex items-center truncate">
+                    Name: {expertData?.name}
+                    {expertData?.isVerified && (
+                      <span className="material-symbols-outlined font-extrabold p-1 text-green-500 ml-1">
+                        check_circle
                       </span>
-                      Video Call
-                    </button>
-                  </div>
+                    )}
+                  </p>
+                  <p className="text-gray-700 truncate">
+                    Email: {expertData?.email}
+                  </p>
+                  <p className="text-gray-700 truncate">
+                    Mobile: {expertData?.mobile}
+                  </p>
                 </div>
-                {jobData.status === 'started' && (
-                  <div className="flex flex-col items-center justify-center p-3">
+              </div>
+              <div className="mt-2 md:mt-0">
+                <button
+                  onClick={startVideoCall}
+                  className="text-white bg-indigo-500 hover:border-2 hover:border-indigo-500 hover:bg-white hover:text-indigo-500 px-4 py-2 rounded-lg flex items-center justify-center"
+                >
+                  <span className="material-symbols-outlined mr-2">
+                    video_call
+                  </span>
+                  Video Call
+                </button>
+              </div>
+            </div>
+
+            {jobData.status === 'started' && (
+              <div className="flex justify-center items-center p-4 w-full">
+                <div className="flex flex-col items-center justify-center bg-indigo-100 p-4 rounded-lg w-full max-w-md">
+                  {/* Adjusted JobTimer Wrapper */}
+                  <div className="flex justify-center items-center w-full">
                     <JobTimer isJobActive={isJobActive} />
                   </div>
-                )}
-
-                {jobData.status === 'pending' && (
-                  <div className="flex flex-col items-center p-2 rounded-lg">
-                    <div className="flex items-center">
-                      <p className="text-gray-800 font-semibold mr-2">Pin:</p>
-                      <div className="flex space-x-2">
-                        {jobData?.pin
-                          ?.toString()
-                          .split('')
-                          .map((digit, index) => (
-                            <div
-                              key={index}
-                              className="flex items-center justify-center w-10 h-10 border border-gray-400 rounded-lg bg-white text-xl font-bold text-gray-800"
-                            >
-                              {digit}
-                            </div>
-                          ))}
-                      </div>
-                    </div>
-                    <p className="text-gray-400 mt-2 text-sm">
-                      *Share this pin with the expert when they arrive.
-                    </p>
-                  </div>
-                )}
+                </div>
               </div>
+            )}
 
-              <div className="flex justify-around mb-4">
-                <button
-                  onClick={() => setActiveTab('details')}
-                  className={`px-4 py-2 font-semibold ${
-                    activeTab === 'details'
-                      ? 'text-indigo-600 border-b-2 border-indigo-600'
-                      : 'text-gray-500'
-                  }`}
-                >
-                  Details
-                </button>
-                <button
-                  onClick={() => setActiveTab('chat')}
-                  className={`px-4 py-2 font-semibold ${
-                    activeTab === 'chat'
-                      ? 'text-indigo-600 border-b-2 border-indigo-600'
-                      : 'text-gray-500'
-                  }`}
-                >
-                  Chat
-                </button>
-              </div>
-
-              {/* {service details} */}
-
-              {activeTab === 'chat' && socket ? (
-                <ChatWithExpert socket={socket} />
-              ) : (
-                <div className="space-y-2 mb-4 p-4 bg-indigo-100 rounded-lg flex justify-between items-center">
-                  <div className="flex-1 font-semibold">
-                    <p className="text-gray-800 p-1">
-                      Service: {jobData.serviceName}
-                    </p>
-                    <p className="text-gray-800 p-1">
-                      Description: {jobData.notes}
-                    </p>
-                    <p className="text-gray-800 p-1">
-                      Status:
-                      <span
-                        className={`${
-                          jobData.status === 'started'
-                            ? 'text-green-600'
-                            : jobData.status === 'pending'
-                            ? 'text-orange-600'
-                            : jobData.status === 'completed'
-                            ? 'text-blue-600'
-                            : 'text-gray-800'
-                        }`}
-                      >
-                        {' '}
-                        {jobData.status}
-                      </span>
-                    </p>
-                    <p className="text-gray-800 p-1">
-                      Distance: {jobData.distance?.toFixed(4)} km
-                    </p>
-                  </div>
-
-                  {/* Price Display */}
-                  <div className="flex flex-col items-end">
-                    <div className="text-4xl font-bold text-gray-800 pr-5">
-                      ₹{jobData.totalAmount?.toFixed(2)}
-                    </div>
-                    <p className="text-[0.775rem] text-black text-center mt-2">
-                      *Additional amount for <br />
-                      time taken will be <br />
-                      calculated upon completion.
-                      <br />
-                      Rate: ₹{jobData.ratePerHour}/hr.
-                    </p>
+            {jobData.status === 'pending' && (
+              <div className="flex flex-col items-center p-4 rounded-lg bg-indigo-100">
+                <div className="flex flex-row">
+                  <p className="text-gray-800 font-semibold mt-2 mr-2">Pin:</p>
+                  <div className="flex space-x-2">
+                    {jobData?.pin
+                      ?.toString()
+                      .split('')
+                      .map((digit, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center justify-center w-10 h-10 border border-gray-400 rounded-lg bg-white text-xl font-bold text-gray-800"
+                        >
+                          {digit}
+                        </div>
+                      ))}
                   </div>
                 </div>
-              )}
+                <p className="text-gray-400 mt-2 text-sm">
+                  *Share this pin with the expert when they arrive.
+                </p>
+              </div>
+            )}
+
+            <div className="flex justify-around mb-4">
+              <button
+                onClick={() => setActiveTab('details')}
+                className={`px-4 py-2 font-semibold ${
+                  activeTab === 'details'
+                    ? 'text-indigo-600 border-b-2 border-indigo-600'
+                    : 'text-gray-500'
+                }`}
+              >
+                Details
+              </button>
+              <button
+                onClick={() => setActiveTab('chat')}
+                className={`px-4 py-2 font-semibold ${
+                  activeTab === 'chat'
+                    ? 'text-indigo-600 border-b-2 border-indigo-600'
+                    : 'text-gray-500'
+                }`}
+              >
+                Chat
+              </button>
             </div>
+
+            {activeTab === 'chat' && socket ? (
+              <ChatWithExpert socket={socket} />
+            ) : (
+              <div className="space-y-2 mb-4 p-4 bg-indigo-100 rounded-lg">
+                <p className="text-gray-800">Service: {jobData.serviceName}</p>
+                <p className="text-gray-800 break-words">
+                  Description: {jobData.notes}
+                </p>
+                <p className="text-gray-800">
+                  Status:
+                  <span
+                    className={`${
+                      jobData.status === 'started'
+                        ? 'text-green-600'
+                        : jobData.status === 'pending'
+                        ? 'text-orange-600'
+                        : jobData.status === 'completed'
+                        ? 'text-blue-600'
+                        : 'text-gray-800'
+                    }`}
+                  >
+                    {' '}
+                    {jobData.status}
+                  </span>
+                </p>
+                <p className="text-gray-800">
+                  Distance: {jobData.distance?.toFixed(4)} km
+                </p>
+                <div className="text-4xl font-bold text-gray-800">
+                  ₹{jobData.totalAmount?.toFixed(2)}
+                </div>
+                <p className="text-sm text-gray-500">
+                  *Additional amount for time taken will be calculated upon
+                  completion. Rate: ₹{jobData.ratePerHour}/hr.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       ) : (
-        <div className="flex justify-center items-center relative z-30 h-[500px]">
-          <div className="w-[500px] max-w-3xl bg-white p-6 border-gray-200 m-2">
-            <h1 className="text-2xl font-bold mb-6 text-center text-black p-2 m-2">
+        <div className="flex justify-center items-center h-[500px]">
+          <div className="w-full max-w-md bg-white p-6 border-gray-200 m-2">
+            <h1 className="text-2xl font-bold text-center text-black">
               No current job details available.
             </h1>
           </div>

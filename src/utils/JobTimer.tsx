@@ -2,12 +2,12 @@ import React, { useEffect, useState, useRef } from 'react';
 import './JobTimer.css';
 
 interface JobTimerProps {
-  isJobActive: boolean; 
+  isJobActive: boolean;
 }
 
 const JobTimer: React.FC<JobTimerProps> = ({ isJobActive }) => {
   const [elapsedTime, setElapsedTime] = useState<number>(0);
-  const timerIntervalRef = useRef<NodeJS.Timeout | null>(null); 
+  const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const currentTime = Date.now();
@@ -16,14 +16,16 @@ const JobTimer: React.FC<JobTimerProps> = ({ isJobActive }) => {
     if (storedStartTime && isJobActive) {
       const startTime = parseInt(storedStartTime, 10);
       const timeElapsed = Math.floor((currentTime - startTime) / 1000);
-      setElapsedTime(timeElapsed); 
+      setElapsedTime(timeElapsed);
     }
 
     const startTimer = () => {
       const existingStartTime = localStorage.getItem('jobStartTime');
 
       // Only set a new start time if one does not already exist
-      const startTime = existingStartTime ? parseInt(existingStartTime, 10) : Date.now();
+      const startTime = existingStartTime
+        ? parseInt(existingStartTime, 10)
+        : Date.now();
       if (!existingStartTime) {
         localStorage.setItem('jobStartTime', startTime.toString());
       }
@@ -31,7 +33,7 @@ const JobTimer: React.FC<JobTimerProps> = ({ isJobActive }) => {
       timerIntervalRef.current = setInterval(() => {
         const now = Date.now();
         const newElapsedTime = Math.floor((now - startTime) / 1000);
-        setElapsedTime(newElapsedTime); 
+        setElapsedTime(newElapsedTime);
       }, 1000);
     };
 
@@ -55,17 +57,19 @@ const JobTimer: React.FC<JobTimerProps> = ({ isJobActive }) => {
     return () => {
       stopTimer();
     };
-  }, [isJobActive]); 
+  }, [isJobActive]);
 
   const formatTime = (seconds: number): string => {
     const hrs = Math.floor(seconds / 3600);
     const mins = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
-    return `${hrs}:${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    return `${hrs}:${mins < 10 ? '0' : ''}${mins}:${
+      secs < 10 ? '0' : ''
+    }${secs}`;
   };
 
   return (
-    <div className={`container1 left-[10%]`}>
+    <div className="container1">
       <div className="rotating-wrapper">
         <span className="blur-circle blur-1"></span>
         <span className="blur-circle blur-2"></span>

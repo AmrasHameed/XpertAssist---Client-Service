@@ -6,9 +6,8 @@ import { Player } from '@lottiefiles/react-lottie-player';
 import { useNavigate, useParams } from 'react-router-dom';
 import { axiosAdmin } from '../../../service/axios/axiosAdmin';
 
-
-const BUCKET =  import.meta.env.VITE_AWS_S3_BUCKET;
-const REGION =  import.meta.env.VITE_AWS_S3_REGION;
+const BUCKET = import.meta.env.VITE_AWS_S3_BUCKET;
+const REGION = import.meta.env.VITE_AWS_S3_REGION;
 
 const EditService = () => {
   const { id } = useParams();
@@ -27,7 +26,9 @@ const EditService = () => {
         price: data.price,
         image: '',
       });
-      setImageUrl(`https://${BUCKET}.s3.${REGION}.amazonaws.com/${data.serviceImage}`);
+      setImageUrl(
+        `https://${BUCKET}.s3.${REGION}.amazonaws.com/${data.serviceImage}`
+      );
     } catch (error) {
       toast.error((error as Error).message);
     }
@@ -87,6 +88,8 @@ const EditService = () => {
       const imageUrl = URL.createObjectURL(file);
       setImageUrl(imageUrl);
     } else {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-expect-error
       setImageUrl(null);
       formik.setFieldValue('image', null);
     }

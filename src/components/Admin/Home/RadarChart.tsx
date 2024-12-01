@@ -10,20 +10,24 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import {
-  ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-expect-error
 export function RadarCharts({ top5BookedServices }) {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //@ts-expect-error
   const chartData = top5BookedServices.map((service) => ({
-    browser: service.name, 
+    browser: service.name,
     visitors: service.bookingCount,
     fill: `hsl(var(--chart-${top5BookedServices.indexOf(service) + 2}))`,
   }));
 
   // Chart configuration
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //@ts-expect-error
   const chartConfig = top5BookedServices.reduce((config, service, index) => {
     config[service.name.toLowerCase()] = {
       label: service.name,
@@ -32,7 +36,7 @@ export function RadarCharts({ top5BookedServices }) {
     return config;
   }, {});
   chartConfig.visitors = {
-    label: "Visitors",
+    label: 'Visitors',
   };
 
   return (

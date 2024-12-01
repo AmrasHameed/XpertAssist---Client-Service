@@ -1,8 +1,11 @@
 import { Player } from '@lottiefiles/react-lottie-player';
+import { useState } from 'react';
+import { FaSpinner } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 const Main = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
   return (
     <div className="bg-gradient-to-b from-black via-black to-cyan-400 text-white py-10">
       <div className="container mx-auto flex flex-col-reverse lg:flex-row items-center">
@@ -35,11 +38,21 @@ const Main = () => {
 
         {/* Right Side: Animation */}
         <div className="w-full lg:w-1/2 -mt-6 lg:mt-5">
+          {isLoading && (
+            <div className="flex items-center justify-center h-80">
+              <div ><FaSpinner className="animate-spin"  /></div>
+            </div>
+          )}
           <Player
             autoplay
             loop
             src="/Animation - 1726033694885.json"
             style={{ height: '80%', width: '80%', background: 'transparent' }}
+            onEvent={(event) => {
+              if (event === 'load') {
+                setIsLoading(false); 
+              }
+            }}
           />
         </div>
       </div>

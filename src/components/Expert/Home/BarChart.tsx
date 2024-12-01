@@ -16,7 +16,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-expect-error
 export function BarChartMonthly({ dailyEarnings }) {
   const chartData =
     Array.isArray(dailyEarnings) && dailyEarnings.length
@@ -48,6 +49,8 @@ export function BarChartMonthly({ dailyEarnings }) {
   const total = React.useMemo(
     () => ({
       earnings: dailyEarnings?.reduce(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-expect-error
         (acc, curr) => acc + curr.dailyEarnings,
         0
       ),

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useRef, useState } from 'react';
 import Footer from '../Home/Footer';
 import Navbar from '../Home/Navbar';
@@ -48,8 +49,8 @@ const JobPayment = () => {
   useEffect(() => {
     if (localStorage.getItem('redirectAfterCashReceived') === 'true') {
       setCountdown(5);
-      if (intervalRef.current) clearInterval(intervalRef.current); 
-  
+      if (intervalRef.current) clearInterval(intervalRef.current);
+
       intervalRef.current = setInterval(() => {
         setCountdown((prevCountdown) => {
           if (prevCountdown === 1) {
@@ -62,9 +63,9 @@ const JobPayment = () => {
           return prevCountdown !== null ? prevCountdown - 1 : null;
         });
       }, 1000);
-  
+
       return () => {
-        if (intervalRef.current) clearInterval(intervalRef.current); 
+        if (intervalRef.current) clearInterval(intervalRef.current);
       };
     }
   }, [navigate, setCountdown, redirect]);
@@ -83,7 +84,7 @@ const JobPayment = () => {
       localStorage.setItem('expertRefreshToken', refreshToken);
     });
     socket?.emit('join_call', user.userId);
-    socket?.on('cashRecieved', async() => {
+    socket?.on('cashRecieved', async () => {
       setIsWaitingCash(false);
       const data = {
         amount: total,
@@ -100,7 +101,7 @@ const JobPayment = () => {
       localStorage.removeItem('jobStopTime');
       localStorage.removeItem('userId-job');
       dispatch(removeMessage());
-      setRedirect(true)
+      setRedirect(true);
     });
 
     socket?.on('cashNotRecieved', () => {
@@ -163,7 +164,8 @@ const JobPayment = () => {
       setTotal(calculatedTotal);
     }
   }, [jobData]);
-
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //@ts-expect-error
   function loadScript(src) {
     return new Promise((resolve) => {
       const script = document.createElement('script');
@@ -202,6 +204,8 @@ const JobPayment = () => {
       description: 'Test Transaction',
       image: './vite.png',
       order_id: order_id,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-expect-error
       handler: async function (response) {
         const data = {
           amount: total,
@@ -236,6 +240,8 @@ const JobPayment = () => {
         color: '#61dafb',
       },
     };
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-expect-error
     const paymentObject = new window.Razorpay(options);
     paymentObject.open();
   };
@@ -308,89 +314,83 @@ const JobPayment = () => {
           </div>
         </div>
       )}
-      <div className="flex justify-center items-center  bg-gray-50">
-        <div className="w-full max-w-3xl bg-white shadow-xl rounded-lg p-10 border border-gray-200 mx-4 my-8 flex flex-col md:flex-row">
-          {/* Left Column - Job Details */}
-          <div className="w-full md:w-1/2 pr-6 mb-6 md:mb-0">
-            <h3 className="text-3xl font-bold mb-8 text-center md:text-left text-indigo-700">
-              Payment Window
-            </h3>
+      <div className="flex justify-center items-center bg-gray-50">
+  <div className="w-full max-w-3xl bg-white shadow-xl rounded-lg p-10 border border-gray-200 mx-4 my-8 flex flex-col md:flex-row">
+    
+    {/* Left Column - Job Details */}
+    <div className="w-full md:w-1/2 pr-6 mb-6 md:mb-0">
+      <h3 className="text-3xl font-bold mb-8 text-center md:text-left text-indigo-700">
+        Payment Window
+      </h3>
 
-            <div className="bg-indigo-50 p-6 rounded-lg shadow-inner">
-              <h4 className="text-xl font-semibold text-gray-800 mb-4">
-                Job Details
-              </h4>
-              <p className="text-gray-700 mb-3">
-                <span className="font-semibold">Service:</span>{' '}
-                {jobData?.serviceName}
-              </p>
-              <p className="text-gray-700 mb-3">
-                <span className="font-semibold">Description:</span>{' '}
-                {jobData?.notes}
-              </p>
-              <p className="text-gray-700">
-                <span className="font-semibold">Distance:</span>{' '}
-                {jobData?.distance?.toFixed(2)} km
-              </p>
-            </div>
-          </div>
+      <div className="bg-indigo-50 p-6 rounded-lg shadow-inner">
+        <h4 className="text-xl font-semibold text-gray-800 mb-4">Job Details</h4>
+        <p className="text-gray-700 mb-3">
+          <span className="font-semibold">Service:</span>{' '}
+          {jobData?.serviceName}
+        </p>
+        <p className="text-gray-700 mb-3">
+          <span className="font-semibold">Description:</span>{' '}
+          <span className="break-words">{jobData?.notes}</span>
+        </p>
+        <p className="text-gray-700">
+          <span className="font-semibold">Distance:</span>{' '}
+          {jobData?.distance?.toFixed(2)} km
+        </p>
+      </div>
+    </div>
 
-          {/* Right Column - Amount Details */}
-          <div className="w-full md:w-1/2 border-t md:border-t-0 md:border-l border-gray-300 pt-6 md:pt-0 md:pl-6">
-            <div className="mb-8">
-              <h4 className="text-3xl font-bold mb-8 text-center md:text-left text-indigo-700">
-                Amount Details
-              </h4>
-              <p className="text-gray-700 mb-3 p-1 flex justify-between border-b-2">
-                <span className="font-semibold">Base Price:</span>
-                <span>₹ {jobData?.serviceBasePrice}</span>
-              </p>
+    {/* Right Column - Amount Details */}
+    <div className="w-full md:w-1/2 border-t md:border-t-0 md:border-l border-gray-300 pt-6 md:pt-0 md:pl-6">
+      <div className="mb-8">
+        <h4 className="text-3xl font-bold mb-8 text-center md:text-left text-indigo-700">
+          Amount Details
+        </h4>
+        <p className="text-gray-700 mb-3 p-1 flex justify-between border-b-2">
+          <span className="font-semibold">Base Price:</span>
+          <span>₹ {jobData?.serviceBasePrice}</span>
+        </p>
 
-              <p className="text-gray-700 mb-3 p-1 flex justify-between border-b-2">
-                <span className="font-semibold">Distance Charge:</span> ₹{' '}
-                {jobData &&
-                  (jobData?.totalAmount - jobData?.serviceBasePrice)?.toFixed(
-                    2
-                  )}
-              </p>
-              <p className="text-gray-700 mb-3 p-1 flex justify-between border-b-2">
-                <span className="font-semibold ">Hourly Charge:</span> ₹{' '}
-                {hourlyRate.toFixed(2)}
-              </p>
-              <p className="text-indigo-700 font-bold text-2xl mt-6 flex justify-between">
-                <span>Total:</span> ₹{total.toFixed(2)}
-              </p>
-            </div>
+        <p className="text-gray-700 mb-3 p-1 flex justify-between border-b-2">
+          <span className="font-semibold">Distance Charge:</span> ₹{' '}
+          {jobData &&
+            (jobData?.totalAmount - jobData?.serviceBasePrice)?.toFixed(2)}
+        </p>
+        <p className="text-gray-700 mb-3 p-1 flex justify-between border-b-2">
+          <span className="font-semibold">Hourly Charge:</span> ₹{' '}
+          {hourlyRate.toFixed(2)}
+        </p>
+        <p className="text-indigo-700 font-bold text-2xl mt-6 flex justify-between">
+          <span>Total:</span> ₹{total.toFixed(2)}
+        </p>
+      </div>
 
-            {/* Payment Options */}
-            <div>
-              <h4 className="text-xl font-semibold text-gray-800 mb-4">
-                Select Payment Method
-              </h4>
-              <div className="flex flex-col gap-4">
-                <button
-                  onClick={handleOnlinePayment}
-                  className="flex justify-center text-white bg-indigo-500 border-2 hover:border-2 hover:border-indigo-500 hover:bg-white hover:text-indigo-500 px-5 py-3 rounded-lg transition duration-300 ease-in-out shadow"
-                >
-                  <span className="material-symbols-outlined px-2">
-                    credit_card
-                  </span>{' '}
-                  Online Payment
-                </button>
-                <button
-                  onClick={handleCashOnDelivery}
-                  className="flex justify-center text-white bg-indigo-500 border-2 hover:border-2 hover:border-indigo-500 hover:bg-white hover:text-indigo-500 px-5 py-3 rounded-lg mb-3 transition duration-300 ease-in-out shadow"
-                >
-                  <span className="material-symbols-outlined px-2">
-                    payments
-                  </span>
-                  Cash on Delivery
-                </button>
-              </div>
-            </div>
-          </div>
+      {/* Payment Options */}
+      <div>
+        <h4 className="text-xl font-semibold text-gray-800 mb-4">
+          Select Payment Method
+        </h4>
+        <div className="flex flex-col gap-4">
+          <button
+            onClick={handleOnlinePayment}
+            className="flex justify-center text-white bg-indigo-500 border-2 hover:border-2 hover:border-indigo-500 hover:bg-white hover:text-indigo-500 px-5 py-3 rounded-lg transition duration-300 ease-in-out shadow"
+          >
+            <span className="material-symbols-outlined px-2">credit_card</span>
+            Online Payment
+          </button>
+          <button
+            onClick={handleCashOnDelivery}
+            className="flex justify-center text-white bg-indigo-500 border-2 hover:border-2 hover:border-indigo-500 hover:bg-white hover:text-indigo-500 px-5 py-3 rounded-lg mb-3 transition duration-300 ease-in-out shadow"
+          >
+            <span className="material-symbols-outlined px-2">payments</span>
+            Cash on Delivery
+          </button>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
       <Footer />
     </div>
   );

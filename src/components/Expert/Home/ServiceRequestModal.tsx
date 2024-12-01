@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { RootState } from '../../../service/redux/store';
 import { Service } from '../../../interfaces/interface';
 import './ServiceRequestModal.css';
 import { useNavigate } from 'react-router-dom';

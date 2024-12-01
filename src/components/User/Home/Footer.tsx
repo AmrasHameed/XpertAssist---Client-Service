@@ -4,6 +4,7 @@ import {
   faXTwitter,
 } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
@@ -30,9 +31,9 @@ const Footer = () => {
               </a>
             </li>
             <li>
-              <a href="#" className="text-gray-400 hover:text-black">
+              <Link to={'/services'} className="text-gray-400 hover:text-black">
                 Services
-              </a>
+              </Link>
             </li>
             <li>
               <a href="#" className="text-gray-400 hover:text-black">

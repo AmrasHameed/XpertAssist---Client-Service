@@ -1,8 +1,8 @@
 import {
-  faFacebook,
+  faGithub,
   faInstagram,
-  faXTwitter,
 } from '@fortawesome/free-brands-svg-icons';
+import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
 
@@ -26,9 +26,9 @@ const Footer = () => {
           <h3 className="text-lg font-semibold">Quick Links</h3>
           <ul className="mt-2 space-y-2">
             <li>
-              <a href="#" className="text-gray-400 hover:text-black">
+              <Link to={'/'} className="text-gray-400 hover:text-black">
                 Home
-              </a>
+              </Link>
             </li>
             <li>
               <Link to={'/services'} className="text-gray-400 hover:text-black">
@@ -78,22 +78,22 @@ const Footer = () => {
           </p>
           <div className="flex space-x-4">
             <a
-              href="www.facebook.com"
+              href="mailto:amrazhameed@gmail.com"
               className="text-gray-400 hover:text-gray-500"
             >
-              <FontAwesomeIcon icon={faFacebook} size="xl" />
+              <FontAwesomeIcon icon={faEnvelope} size="xl" />
             </a>
             <a
-              href="www.instagram.com"
+              href="https://www.instagram.com/amrazhameed/"
               className="text-gray-400 hover:text-gray-500"
             >
               <FontAwesomeIcon icon={faInstagram} size="xl" />
             </a>
             <a
-              href="www.x.com"
+              href="https://github.com/AmrasHameed/"
               className="text-gray-400 hover:text-gray-500"
             >
-              <FontAwesomeIcon icon={faXTwitter} size="xl" />
+              <FontAwesomeIcon icon={faGithub} size="xl" />
             </a>
           </div>
         </div>

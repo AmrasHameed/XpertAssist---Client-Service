@@ -16,7 +16,18 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18' 
+          node-version: '18'
+
+      - name: Set environment variables for React build
+        run: |
+          echo "VITE_BASE_URL=${{ secrets.VITE_BASE_URL }}" >> $GITHUB_ENV
+          echo "VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }}" >> $GITHUB_ENV
+          echo "VITE_AWS_S3_BUCKET=${{ secrets.VITE_AWS_S3_BUCKET }}" >> $GITHUB_ENV
+          echo "VITE_AWS_S3_REGION=${{ secrets.VITE_AWS_S3_REGION }}" >> $GITHUB_ENV
+          echo "VITE_SOCKET_BASE_URL=${{ secrets.VITE_SOCKET_BASE_URL }}" >> $GITHUB_ENV
+          echo "VITE_AUTOCOMPLETE_API_URL=${{ secrets.VITE_AUTOCOMPLETE_API_URL }}" >> $GITHUB_ENV
+          echo "VITE_REVERSE_GEOCODING_API_URL=${{ secrets.VITE_REVERSE_GEOCODING_API_URL }}" >> $GITHUB_ENV
+          echo "VITE_OLA_MAPS_API_KEY=${{ secrets.VITE_OLA_MAPS_API_KEY }}" >> $GITHUB_ENV
 
       - name: Install dependencies
         run: npm ci
